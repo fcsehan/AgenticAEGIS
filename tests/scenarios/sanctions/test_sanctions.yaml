@@ -1,0 +1,57 @@
+scenario: "Sanctions compliance checks"
+domain: sanctions
+setup:
+  meld_dir: aegis/domains/sanctions
+  code_prevalence:
+    - SanctionsHumanitarianCode
+    - SanctionsCompliance
+
+steps:
+  - name: "Clear entity transaction → PERMITTED"
+    action:
+      action_type: approveTransaction
+      agent_id: tradeComplianceAgent
+      proposition:
+        sanctionStatus: clear
+        destination: unrestricted
+    expected:
+      decision: PERMITTED
+
+  - name: "SDN-listed entity transaction → FORBIDDEN"
+    action:
+      action_type: approveTransaction
+      agent_id: tradeComplianceAgent
+      proposition:
+        sanctionStatus: SDN_listed
+        destination: unrestricted
+    expected:
+      decision: FORBIDDEN
+
+  - name: "Dual-use goods to restricted → FORBIDDEN"
+    action:
+      action_type: releaseShipment
+      agent_id: tradeComplianceAgent
+      proposition:
+        goodsType: dualUse
+        destination: restricted
+    expected:
+      decision: FORBIDDEN
+
+  - name: "Humanitarian aid to sanctioned territory → PERMITTED"
+    action:
+      action_type: supplyHumanitarianAid
+      agent_id: tradeComplianceAgent
+      proposition:
+        destination: sanctioned
+    expected:
+      decision: PERMITTED
+
+  - name: "Military goods to sanctioned → FORBIDDEN (moral axiom)"
+    action:
+      action_type: releaseShipment
+      agent_id: tradeComplianceAgent
+      proposition:
+        goodsType: military
+        destination: sanctioned
+    expected:
+      decision: FORBIDDEN

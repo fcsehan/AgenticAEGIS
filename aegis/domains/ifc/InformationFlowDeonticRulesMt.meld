@@ -1,0 +1,66 @@
+(aegis-schema-version 1)
+(case InformationFlowDeonticRulesMt)
+
+;; ── Information Flow Code ──────────────────────────
+;; Default rules for information handling by mission agents.
+;; These protect classified content from unauthorized retrieval,
+;; transformation, and disclosure.
+
+;; ── Reading: public content freely accessible ──────
+(permittedToDo-WRT InformationFlowCode agentInMission (readDocument public internalAnalysis))
+(permittedToDo-WRT InformationFlowCode agentInMission (readDocument internal internalAnalysis))
+(permittedToDo-WRT InformationFlowCode agentInMission (readDocument public externalBriefing))
+
+;; ── Reading: secret content gated ──────────────────
+(forbiddenToDo-WRT InformationFlowCode agentInMission (readDocument secret externalBriefing))
+(forbiddenToDo-WRT InformationFlowCode agentInMission (readDocument secret publicRelease))
+(forbiddenToDo-WRT InformationFlowCode agentInMission (readDocument topSecret externalBriefing))
+(forbiddenToDo-WRT InformationFlowCode agentInMission (readDocument topSecret publicRelease))
+(forbiddenToDo-WRT InformationFlowCode agentInMission (readDocument topSecret internalAnalysis))
+
+;; ── Searching: classified corpus restricted ────────
+(permittedToDo-WRT InformationFlowCode agentInMission (searchCorpus public internalAnalysis))
+(forbiddenToDo-WRT InformationFlowCode agentInMission (searchCorpus secret externalBriefing))
+
+;; ── Disclosure: secret to external FORBIDDEN ───────
+(forbiddenToDo agentInMission (discloseInformation secret externalService externalBriefing))
+(forbiddenToDo agentInMission (discloseInformation secret externalService publicRelease))
+(forbiddenToDo agentInMission (discloseInformation topSecret externalService externalBriefing))
+(forbiddenToDo agentInMission (discloseInformation confidential externalService publicRelease))
+
+;; ── Disclosure: internal recipients permitted for analysis ──
+(permittedToDo-WRT InformationFlowCode agentInMission (discloseInformation public internalAgent internalAnalysis))
+(permittedToDo-WRT InformationFlowCode agentInMission (discloseInformation public externalService externalBriefing))
+(permittedToDo-WRT InformationFlowCode agentInMission (discloseInformation internal internalAgent internalAnalysis))
+
+;; ── Summarization: classification downgrade forbidden ──
+(forbiddenToDo agentInMission (summarizeInformation secret public externalService))
+(forbiddenToDo agentInMission (summarizeInformation secret public internalAgent))
+(forbiddenToDo agentInMission (summarizeInformation topSecret public externalService))
+(forbiddenToDo agentInMission (summarizeInformation confidential public externalService))
+
+;; ── Summarization: same-level permitted ────────────
+(permittedToDo-WRT InformationFlowCode agentInMission (summarizeInformation public public internalAgent))
+(permittedToDo-WRT InformationFlowCode agentInMission (summarizeInformation public public externalService))
+(permittedToDo-WRT InformationFlowCode agentInMission (summarizeInformation internal internal internalAgent))
+
+;; ── Classification downgrade: moral axiom ──────────
+(forbiddenToDo agentInMission (classifyInformation secret public))
+(forbiddenToDo agentInMission (classifyInformation topSecret public))
+(forbiddenToDo agentInMission (classifyInformation topSecret secret))
+(forbiddenToDo agentInMission (classifyInformation confidential public))
+
+;; ── Export: secret content never exported ──────────
+(forbiddenToDo agentInMission (exportInformation secret externalService summarization))
+(forbiddenToDo agentInMission (exportInformation secret externalService extraction))
+(forbiddenToDo agentInMission (exportInformation topSecret externalService summarization))
+(forbiddenToDo agentInMission (exportInformation topSecret externalService extraction))
+
+;; ── Export: public content exportable ──────────────
+(permittedToDo-WRT InformationFlowCode agentInMission (exportInformation public externalService summarization))
+(permittedToDo-WRT InformationFlowCode agentInMission (exportInformation public internalAgent extraction))
+
+;; ── Extraction: purpose-bound ──────────────────────
+(permittedToDo-WRT InformationFlowCode agentInMission (extractFacts public internalAnalysis public))
+(forbiddenToDo-WRT InformationFlowCode agentInMission (extractFacts secret externalBriefing public))
+(forbiddenToDo agentInMission (extractFacts secret publicRelease public))

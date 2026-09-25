@@ -1,0 +1,47 @@
+;; AEGIS-2712 (Epic 27) — DevOps Plan-Level Constraints.
+;;
+;; Reference plan-constraints for the DevOps domain. These complement
+;; the action-level norms in DevOpsDeonticRulesMt by adding sequence,
+;; aggregate, timing, and precondition semantics that only make sense
+;; at plan granularity.
+;;
+;; Loaded as a v1 module — uses camelCase predicate spelling. The
+;; loader extracts these into PlanNormFrame instances which the
+;; v1 compat layer turns into DDICPlanConstraint entries on the
+;; DDICModule.
+
+(aegis-schema-version 1)
+(case DevOpsPlanNormsMt)
+
+;; ── Sequence ────────────────────────────────────
+;; Build → Test → Deploy is the canonical CI/CD ordering. Approval
+;; must precede any sensitive-config modification.
+(obligateSequence buildArtifact testArtifact)
+(obligateSequence testArtifact deployArtifact)
+(obligateSequence requestApproval modifySensitiveConfig)
+
+;; ── Aggregate ───────────────────────────────────
+;; Hard caps on dangerous actions. forceModifyRepository and
+;; executeRemoteCode are flat-out forbidden in any plan
+;; (threshold 0). modifySensitiveConfig is single-shot.
+;; deployArtifact has a sane upper bound to prevent
+;; accidental deployment storms.
+(forbidAggregate forceModifyRepository 0)
+(forbidAggregate executeRemoteCode 0)
+(forbidAggregate modifySensitiveConfig 1)
+(forbidAggregate deployArtifact 3)
+
+;; ── Timing ──────────────────────────────────────
+;; Emergency rollback must be the first step (no delay).
+;; Deploy must occur within 30 minutes of plan start (cumulative
+;; scheduled_duration_s budget = 1800).
+(obligateWithin emergencyRollback immediate)
+(obligateWithin deployArtifact 1800)
+
+;; ── Preconditions ───────────────────────────────
+;; Deploy requires that tests have passed; modifySensitiveConfig
+;; requires reviewer approval; force-push requires the
+;; emergency break-glass flag.
+(requirePrecondition deployArtifact (testStatus passed))
+(requirePrecondition modifySensitiveConfig (approvalFrom reviewer))
+(requirePrecondition forceModifyRepository (approvalFrom emergencyBreakGlass))

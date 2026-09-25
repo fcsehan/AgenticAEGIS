@@ -1,0 +1,31 @@
+(aegis-schema-version 1)
+(case SanctionsDomainOntologyMt)
+
+;; ── Agent Roles ────────────────────────────────
+(isa tradeComplianceAgent SanctionsRole)
+(isa seniorComplianceOfficer SanctionsRole)
+(genls SanctionsRole IntelligentAgent)
+(genls seniorComplianceOfficer tradeComplianceAgent)
+
+;; ── Sanction Status ────────────────────────────
+(isa SDN_listed SanctionStatus)
+(isa clear SanctionStatus)
+(isa watchlist SanctionStatus)
+
+;; ── Goods Types ────────────────────────────────
+(isa dualUse GoodsType)
+(isa civilian GoodsType)
+(isa military GoodsType)
+(isa humanitarian GoodsType)
+
+;; ── Destination Categories ─────────────────────
+(isa restricted DestinationType)
+(isa unrestricted DestinationType)
+(isa sanctioned DestinationType)
+(isa allied DestinationType)
+
+;; ── Deontic Infrastructure ─────────────────────
+(genlPreds oughtToDo-WRT permittedToDo-WRT)
+(negationPreds oughtToDo forbiddenToDo)
+(negationPreds permittedToDo forbiddenToDo)
+(negationPreds permittedToDo-WRT forbiddenToDo-WRT)

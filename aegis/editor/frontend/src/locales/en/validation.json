@@ -1,0 +1,14 @@
+{
+  "title": "Validation",
+  "valid": "Valid",
+  "errors": "{{count}} error(s)",
+  "warnings": "{{count}} warning(s)",
+  "noIssues": "No issues found",
+  "undeclaredSymbol": "Undeclared symbol: {{symbol}}",
+  "possibleTypo": "Possible typo: did you mean \"{{suggestion}}\"?",
+  "conflictDetected": "Conflict between rules {{rule1}} and {{rule2}}",
+  "resolveConflict": "Resolve Conflict",
+  "conflictResolution": "Conflict Resolution",
+  "specificity": "Higher specificity wins",
+  "prevalence": "Code prevalence determines outcome"
+}

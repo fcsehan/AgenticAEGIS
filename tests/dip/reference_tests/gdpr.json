@@ -1,0 +1,62 @@
+[
+  {
+    "action_type": "deleteData",
+    "agent_id": "dataController",
+    "expected_verdict": "FORBIDDEN",
+    "description": "Art. 17: Personal-data erasure — CWA default"
+  },
+  {
+    "action_type": "processDataLawfully",
+    "agent_id": "dataController",
+    "expected_verdict": "PERMITTED",
+    "description": "Art. 5(1): Lawful processing is obligatory and implies permission"
+  },
+  {
+    "action_type": "requestDeletion",
+    "agent_id": "dataSubject",
+    "expected_verdict": "PERMITTED",
+    "description": "Art. 17(1): Data subject right to erasure"
+  },
+  {
+    "action_type": "ensureSecurity",
+    "agent_id": "dataController",
+    "expected_verdict": "PERMITTED",
+    "description": "Art. 32: Processing security is obligatory and implies permission"
+  },
+  {
+    "action_type": "furtherProcessData",
+    "agent_id": "dataController",
+    "expected_verdict": "FORBIDDEN",
+    "description": "Art. 5(1)b: Purpose limitation — further processing prohibited"
+  },
+  {
+    "action_type": "demonstrateCompliance",
+    "agent_id": "dataController",
+    "expected_verdict": "PERMITTED",
+    "description": "Art. 5(2): Accountability is obligatory and implies permission"
+  },
+  {
+    "action_type": "communicatePurposes",
+    "agent_id": "dataController",
+    "expected_verdict": "PERMITTED",
+    "description": "Art. 13: Providing information is obligatory and implies permission"
+  },
+  {
+    "action_type": "ensureSecurity",
+    "agent_id": "dataProcessor",
+    "expected_verdict": "FORBIDDEN",
+    "description": "Art. 32: Processor security measures under CWA"
+  },
+  {
+    "action_type": "unknownAction",
+    "agent_id": "dataController",
+    "expected_verdict": "UNDECIDABLE",
+    "description": "Unknown action -> UNDECIDABLE (no CWA for unknown action types)"
+  },
+  {
+    "action_type": "deleteData",
+    "agent_id": "unknownAgent",
+    "expected_verdict": "FORBIDDEN",
+    "description": "Unknown agent -> FORBIDDEN (CWA: no explicit permission)"
+  }
+]

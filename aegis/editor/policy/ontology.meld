@@ -1,0 +1,15 @@
+(aegis-schema-version 1)
+(case EditorOntologyMt)
+(isa localOperator IntelligentAgent)
+(isa localEndpoint EditorDestination)
+(isa remoteEndpoint EditorDestination)
+
+(isa reviewedSnapshot EditorEvidence)
+
+(isa publicData EditorClassification)
+(isa internalData EditorClassification)
+(isa confidentialData EditorClassification)
+(isa metadataChannel EditorChannel)
+(isa capabilityChannel EditorChannel)
+(isa authoringChannel EditorChannel)
+(isa documentChannel EditorChannel)

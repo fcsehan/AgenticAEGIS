@@ -1,0 +1,43 @@
+(aegis-schema-version 1)
+(case LegalDomainOntologyMt)
+
+;; ── Agent Roles ────────────────────────────────
+(isa dataProcessorAgent LegalRole)
+(isa legalReviewAgent LegalRole)
+(isa dataControllerAgent LegalRole)
+(genls LegalRole IntelligentAgent)
+(genls legalReviewAgent dataProcessorAgent)
+
+;; ── Data Categories ────────────────────────────
+(isa personalData DataCategory)
+(isa medicalData DataCategory)
+(isa publicData DataCategory)
+(isa financialData DataCategory)
+
+;; ── Recipient Types ────────────────────────────
+(isa externalService RecipientType)
+(isa thirdParty RecipientType)
+(isa internalDepartment RecipientType)
+(isa dataSubject RecipientType)
+
+;; ── Legal Basis ────────────────────────────────
+(isa consent LegalBasis)
+(isa legitimateInterest LegalBasis)
+(isa legalObligation LegalBasis)
+(isa vitalInterest LegalBasis)
+
+;; ── Contract Types ─────────────────────────────
+(isa NDA ContractType)
+(isa serviceAgreement ContractType)
+(isa employmentContract ContractType)
+
+;; ── Privilege Status ───────────────────────────
+(isa attorney_client PrivilegeStatus)
+(isa work_product PrivilegeStatus)
+(isa public_record PrivilegeStatus)
+
+;; ── Deontic Infrastructure ─────────────────────
+(genlPreds oughtToDo-WRT permittedToDo-WRT)
+(negationPreds oughtToDo forbiddenToDo)
+(negationPreds permittedToDo forbiddenToDo)
+(negationPreds permittedToDo-WRT forbiddenToDo-WRT)

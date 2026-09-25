@@ -1,0 +1,53 @@
+scenario: "IAMission intelligence sharing constraints"
+domain: ia_mission
+setup:
+  meld_dir: aegis/domains/iamission
+  code_prevalence:
+    - IAMissionCode
+
+steps:
+  - name: "Unclassified intel to commander → PERMITTED"
+    action:
+      action_type: shareIntelligence
+      agent_id: intelligenceAgentInMission
+      proposition:
+        classification: unclassified
+        recipient: commanderInMission
+    expected:
+      decision: PERMITTED
+
+  - name: "Classified intel sharing → FORBIDDEN"
+    action:
+      action_type: shareIntelligence
+      agent_id: intelligenceAgentInMission
+      proposition:
+        classification: classified
+    expected:
+      decision: FORBIDDEN
+
+  - name: "Secret intel sharing → FORBIDDEN"
+    action:
+      action_type: shareIntelligence
+      agent_id: intelligenceAgentInMission
+      proposition:
+        classification: secret
+    expected:
+      decision: FORBIDDEN
+
+  - name: "Personal data to external → FORBIDDEN (moral axiom)"
+    action:
+      action_type: sendDataExternal
+      agent_id: personalStaffAgentInMission
+      proposition:
+        dataCategory: personal
+        recipient: externalService
+    expected:
+      decision: FORBIDDEN
+
+  - name: "Delete record → FORBIDDEN for all roles"
+    action:
+      action_type: deleteRecord
+      agent_id: intelligenceAgentInMission
+      proposition: {}
+    expected:
+      decision: FORBIDDEN

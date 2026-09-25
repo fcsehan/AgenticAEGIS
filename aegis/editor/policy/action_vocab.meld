@@ -1,0 +1,12 @@
+(aegis-schema-version 1)
+(case EditorActionVocabMt)
+(isa readEditor ActionType)
+(isa modifyEditor ActionType)
+(isa releaseEditor ActionType)
+(isa sendEditorInference ActionType)
+(actionParameter sendEditorInference destination EditorDestination)
+
+(actionParameter releaseEditor evidence EditorEvidence)
+
+(actionParameter sendEditorInference classification EditorClassification)
+(actionParameter sendEditorInference channel EditorChannel)

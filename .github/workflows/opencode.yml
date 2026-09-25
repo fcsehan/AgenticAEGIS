@@ -1,0 +1,38 @@
+name: OpenCode integration
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  process-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm --prefix aegis/editor/frontend ci
+      - run: npm --prefix aegis/editor/frontend run build
+      - run: python -m pip install -e '.[api,ops,dev]'
+      - run: integrations/opencode/scripts/setup.sh
+      - run: ruff check integrations/opencode/scripts integrations/opencode/tests
+      - run: mypy --strict integrations/opencode/scripts integrations/opencode/tests/test_process.py
+      - run: integrations/opencode/scripts/test.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: opencode-process-evidence
+          include-hidden-files: true
+          if-no-files-found: error
+          path: |
+            integrations/opencode/.runs/*/report.json
+            integrations/opencode/.runs/*/*.xml
+            integrations/opencode/.runs/*/cases/*.json

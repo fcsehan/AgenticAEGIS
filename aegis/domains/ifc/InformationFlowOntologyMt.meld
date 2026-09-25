@@ -1,0 +1,41 @@
+(aegis-schema-version 1)
+(case InformationFlowOntologyMt)
+
+;; ── Agent Roles ────────────────────────────────
+(isa agentInMission IntelligentAgent)
+(isa externalService Recipient)
+(isa internalAgent Recipient)
+(isa humanOperator Recipient)
+
+;; ── Classification Levels ──────────────────────
+(isa public ClassificationLevel)
+(isa internal ClassificationLevel)
+(isa confidential ClassificationLevel)
+(isa secret ClassificationLevel)
+(isa topSecret ClassificationLevel)
+
+;; ── Purpose Categories ─────────────────────────
+(isa internalAnalysis PurposeCategory)
+(isa externalBriefing PurposeCategory)
+(isa publicRelease PurposeCategory)
+(isa operationalPlanning PurposeCategory)
+(isa auditCompliance PurposeCategory)
+
+;; ── Scope Categories ───────────────────────────
+(isa fullContent ScopeCategory)
+(isa metadataOnly ScopeCategory)
+(isa redactedSnippet ScopeCategory)
+(isa summary ScopeCategory)
+
+;; ── Transformation Types ───────────────────────
+(isa summarization TransformationType)
+(isa extraction TransformationType)
+(isa comparison TransformationType)
+(isa reclassification TransformationType)
+(isa aggregation TransformationType)
+
+;; ── Deontic Infrastructure ─────────────────────
+(genlPreds oughtToDo-WRT permittedToDo-WRT)
+(negationPreds oughtToDo forbiddenToDo)
+(negationPreds permittedToDo forbiddenToDo)
+(negationPreds permittedToDo-WRT forbiddenToDo-WRT)

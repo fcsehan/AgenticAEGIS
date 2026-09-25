@@ -1,0 +1,20 @@
+(aegis-schema-version 1)
+(case PharmaActionVocabMt)
+
+;; ── Action Types ───────────────────────────────
+(isa prescribeMedication ActionType)
+(isa reportAdverseEvent ActionType)
+(isa approveDistribution ActionType)
+(isa modifyFormulation ActionType)
+(isa recommendDosage ActionType)
+(isa overrideInteraction ActionType)
+
+;; ── Action Parameters ──────────────────────────
+(actionParameter prescribeMedication medicationClass MedicationClass)
+(actionParameter prescribeMedication interactionSeverity InteractionSeverity)
+(actionParameter reportAdverseEvent severity InteractionSeverity)
+(actionParameter approveDistribution approvalStatus ApprovalStatus)
+(actionParameter approveDistribution trialPhase TrialPhase)
+(actionParameter modifyFormulation compound MedicationClass)
+(actionParameter recommendDosage medicationClass MedicationClass)
+(actionParameter overrideInteraction documentation ApprovalStatus)

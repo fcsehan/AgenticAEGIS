@@ -1,0 +1,56 @@
+scenario: "Legal/GDPR compliance checks"
+domain: legal
+setup:
+  meld_dir: aegis/domains/legal
+  code_prevalence:
+    - DataProtection
+
+steps:
+  - name: "Personal data to external → FORBIDDEN"
+    action:
+      action_type: sendPersonalData
+      agent_id: dataProcessorAgent
+      proposition:
+        dataCategory: personalData
+        recipient: externalService
+    expected:
+      decision: FORBIDDEN
+
+  - name: "Public data to external → PERMITTED"
+    action:
+      action_type: sendPersonalData
+      agent_id: dataProcessorAgent
+      proposition:
+        dataCategory: publicData
+        recipient: externalService
+    expected:
+      decision: PERMITTED
+
+  - name: "Medical data to third party → FORBIDDEN"
+    action:
+      action_type: sendPersonalData
+      agent_id: dataProcessorAgent
+      proposition:
+        dataCategory: medicalData
+        recipient: thirdParty
+    expected:
+      decision: FORBIDDEN
+
+  - name: "Approve NDA → PERMITTED"
+    action:
+      action_type: approveContract
+      agent_id: legalReviewAgent
+      proposition:
+        contractType: NDA
+    expected:
+      decision: PERMITTED
+
+  - name: "Attorney-client doc to external → FORBIDDEN"
+    action:
+      action_type: shareDocument
+      agent_id: legalReviewAgent
+      proposition:
+        privilegeStatus: attorney_client
+        recipient: externalService
+    expected:
+      decision: FORBIDDEN

@@ -1,0 +1,6 @@
+(aegis-schema-version 1)
+(case OpenCodeEvidenceActionVocabMt)
+(isa readFile ActionType)
+(isa modifyFile ActionType)
+(actionParameter readFile path FilePath)
+(actionParameter modifyFile path FilePath)

@@ -1,0 +1,50 @@
+(aegis-schema-version 1)
+(case IAMissionActionVocabMt)
+
+;; Action types for the IAMission domain
+;; Derived from IAMissionObligationVocabMt roles and obligations
+
+(isa shareIntelligence MissionActionType)
+(isa requestIntelligence MissionActionType)
+(isa directOperations MissionActionType)
+(isa delegateToSubAgent MissionActionType)
+(isa sendDataExternal MissionActionType)
+(isa deleteRecord MissionActionType)
+(isa formulatePolicy MissionActionType)
+(isa provideLogisticsSupport MissionActionType)
+(isa communicateWithCommander MissionActionType)
+
+;; Parameters for shareIntelligence
+(actionParameter shareIntelligence classification DataClassificationType)
+(actionParameter shareIntelligence recipient MissionSupportRole)
+;; requiredContext removed — context enrichment is the operator's responsibility (D-010)
+;; In production, the enricher would populate dataClassification from the DMS
+
+;; Parameters for sendDataExternal
+(actionParameter sendDataExternal dataCategory DataCategoryType)
+(actionParameter sendDataExternal recipientType RecipientType)
+
+;; Parameters for delegateToSubAgent
+(actionParameter delegateToSubAgent taskType TaskType)
+(actionParameter delegateToSubAgent dataCategory DataCategoryType)
+
+;; Parameters for deleteRecord
+(actionParameter deleteRecord recordType RecordType)
+
+;; Data classification types
+(isa classified DataClassificationType)
+(isa secret DataClassificationType)
+(isa topSecret DataClassificationType)
+(isa unclassified DataClassificationType)
+
+;; Data category types (from prototype core.lp)
+(isa personal DataCategoryType)
+(isa medical DataCategoryType)
+(isa public DataCategoryType)
+(isa internal DataCategoryType)
+
+;; Recipient types
+(isa externalService RecipientType)
+(isa internalAgent RecipientType)
+(isa user RecipientType)
+(isa alliedNation RecipientType)

@@ -1,0 +1,233 @@
+;; OpenCyc knowledge-base extract; copyright Cycorp, Inc.
+;; Source: QRG OpenCyc 1.02 flat files (2007-02-14).
+;; Packaging change: provenance header added for AgenticAEGIS.
+;; See THIRD_PARTY_NOTICES.md and licenses/OpenCyc-LEGAL.txt.
+
+ (case IAMissionObligationVocabMt)
+ (comment personalStaffAgentInMission
+ "(#$personalStaffAgentInMission MISSIONMT AGENT) means that
+AGENT is responsible for providing personal staff support to the unit
+or agency assigned to MISSIONMT.  Responsibilities associated with
+this role include, but are not limited to, political advice, and
+assisting the commander with special matters over which the commander
+chooses to exercise close personal control.")
+ (comment PersonalStaffObligation
+ "Collection of #$Obligation instances characteristic of the unit/agent playing the role of #$personalStaffAgentInMission.  Such responsibilities may include maintaining the capability to deal with special matters over which the commander elects to exercise personal control.")
+ (arg2Isa supportFromPlayer TotallyOrderedQuantityType)
+ (genls AdministeringPrisonersOfWar PurposefulAction)
+ (comment LogisticsSupport
+ "A collection of attributes denoting various gradations of
+support involving logistics elements, such as a subordinate agency
+specialized for such support might give to a superior #$Agent.")
+ (arg2Isa intelligenceAgentInMission Individual)
+ (isa J3Obligation JointStaffResponsibilityType)
+ (comment SupportCommunicationsForAgent
+ "A collection of #$AttributeValues denoting various gradations of communications support a           subordinate unit or agent might provide to a superior agent.  The kind of support           intended here includes furnishing means of communication.")
+ (isa SpecialStaffObligation JointStaffResponsibilityType)
+ (comment manPowerAndPersonnelAgentInMission
+ "(#$manPowerAndPersonnelAgentInMission MISSIONMT AGENT) means
+that AGENT has the role of providing manpower and personnel support to
+the unit or agency assigned to MISSIONMT.  Responsibilities associated
+with this role include, but are not limited to, managing manpower,
+formulating personnel policies, and supervising administration of
+personnel, including civilians and prisoners of war.")
+ (arg1Isa PolicyFormulationFn Collection)
+ (genls J2Obligation Obligation)
+ (isa operationsAgentInMission MissionSupportRole)
+ (argIsa supportAgentHasObligations 1 Individual)
+ (arg1Genl PolicyConcernsFn TemporalThing)
+ (comment SpecialStaffObligation
+ "Collection of #$Obligation instances characteristic of the unit/agent playing the role of #$specialStaffAgentInMission.  Such responsibilities may include maintaining the capability to give technical, administrative, and tactical advice, and to prepare components of plans, estimates, and orders.")
+ (comment OperationsSupport
+ "A collection of quantities of operational support  involving direction and control of operations, such as a
+subordinate agency specialized for such support might give to a
+superior #$Agent.")
+ (genls AdministeringCivilians PurposefulAction)
+ (comment intelligenceAgentInMission
+ "(#$intelligenceAgentInMission MISSION-TYPE AGENT) means that AGENT plays the role of intelligence provider in the mission whose conditions are specified by MISSION-TYPE.  Responsibilities of such agents include, but are not limited to, insuring availability of sound intelligence on area and enemy locations, activities, and capabilities, directing intelligence efforts on proper enemy items of interest, insuring adequate intelligence coverage and response, and disclosing enemy capabilities and intentions.")
+ (argGenl activityTypeSupervised 2 Action)
+ (argIsa PolicyConcernsFn 1 Collection)
+ (comment JointStaffResponsibilityType
+ "A type level collection.  Instances are collections of #$Obligation instances such that said instances are characterized by responsibilities corresponding to the identified Functions of Joint Staff Divisions identified on p. 7 of v. 0.9 of the DASSA Cyber Command and Control spec.")
+ (comment PolicyConcernsFn
+ "(#$PolicyConcernsFn THINGTYPE) returns the collection of
+instances of#$OrganizationPolicy that have instances of THINGTYPE as
+the primary concern or focus of the policy. ")
+ (comment AdministeringPersonnel
+ "Collection of instances of #$PurposefulAction. Each instance
+has as its focus the disposition and tracking of a number of
+individuals within some bureaucratic system.")
+ (comment J5Obligation
+ "Collection of #$Obligation instances characteristic of the unit/agent playing the role of #$planningAndPolicyAgentInMission.  Such responsibilities may include maintaining the capability to assist in long range or future planning, and to prepare situation estimates and COAs.")
+ (comment C4Support
+ "A collection of attributes denoting various gradations of
+support involving 'command, control, communications, and computers'
+(C4), such as a subordinate agency specialized for such support might
+provide a superior #$Agent.")
+ (isa personalStaffAgentInMission MissionSupportRole)
+ (argIsa intelligenceAgentInMission 2 Individual)
+ (argGenl supportFromPlayer 2 InterAgentSupportQuantity)
+ (comment CommanderInMissionFn
+ "(#$CommanderInMissionFn MISSION) designates the commander in
+charge of the #$Mission-AssignedActionType MISSION in a military planning
+context. This is the denotational function corresponding to
+#$commanderInMission.")
+ (genls J6Obligation Obligation)
+ (arg1Isa supportFromPlayer MissionSupportRole)
+ (comment J6Obligation
+ "Collection of #$Obligation instances characteristic of the unit/agent playing the role of #$c4AgentInMission.  Such responsibilities may include maintaining the capability to assist the commander with responsibilities for communications and electronic data systems, to prepare communications and data systems plans, and to furnish communications to exercise command in the combat theater.")
+ (comment PlanningAndPolicySupport
+ "A collection of attributes denoting various gradations of
+support involving planning and policy elements, such as a subordinate
+agency specialized for such support might give to a superior
+#$Agent.")
+ (isa c4AgentInMission MissionSupportRole)
+ (comment PersonalStaffSupport
+ "A collection of attributes denoting various gradations of
+support involving personal staff elements, such as a subordinate agency
+specialized for such support might provide a superior agent.")
+ (functionCorrespondingPredicate-Canonical CommanderInMissionFn
+ commanderInMission 2)
+ (arg2Genl supportFromPlayer InterAgentSupportQuantity)
+ (isa logisticsAgentInMission MissionSupportRole)
+ (comment MissionSupportRole
+ "A collection of instances of #$BinaryPredicate.  Each
+instance is a #$Role that may be played by some agent in support of
+the agency assigned a particular mission--intelligence provider,
+operations support, manpower and personnel support, etc.")
+ (isa J5Obligation JointStaffResponsibilityType)
+ (genls SpecialStaffObligation Obligation)
+ (comment specialStaffAgentInMission
+ "(#$specialStaffAgentInMission MISSIONMT AGENT) means that
+AGENT is responsible for providing special staff support to the unit
+or agency assigned to MISSIONMT.  Responsibilities associated with
+this role include, but are not limited to, giving technical,
+administrative, and tactical advice, preparing plan components,
+estimates, and orders, and coordinating and supervising staff
+activities.")
+ (genls J3Obligation Obligation)
+ (comment activityTypeSupervised
+ "(#$activityTypeSupervised SUPERVISE ACTTYPE) means that the
+kind of activity supervised in the #$Supervising instance SUPERVISE is
+ACTTYPE.")
+ (isa J6Obligation JointStaffResponsibilityType)
+ (isa J1Obligation JointStaffResponsibilityType)
+ (comment c4AgentInMission
+ "(#$c4AgentInMission MISSIONMT AGENT) means that AGENT has the 
+role of providing 'command, control, communications, and computers' 
+(C4) support to the unit or agency assigned to MISSIONMT. 
+Responsibilities associated with this role include, but are not 
+limited to, assisting the commander with communications-electronics 
+and automated data systems, preparing communications and data systems 
+plans to support operations and strategic concepts, and furnishing 
+communications to exercise command in mission execution.")
+ (argIsa supportFromPlayer 2 TotallyOrderedQuantityType)
+ (genls PersonalStaffObligation Obligation)
+ (argIsa PolicyFormulationFn 1 Collection)
+ (isa PersonalStaffObligation JointStaffResponsibilityType)
+ (isa intelligenceAgentInMission MissionSupportRole)
+ (arg2Genl activityTypeSupervised Action)
+ (arg1Isa supportAgentHasObligations Individual)
+ (arg1Isa PolicyConcernsFn Collection)
+ (singleEntryFormatInArgs commanderInMission 2)
+ (isa specialStaffAgentInMission MissionSupportRole)
+ (genls J4Obligation Obligation)
+ (comment J4Obligation
+ "Collection of #$Obligation instances characteristic of the unit/agent playing the role of #$logisticsAgentInMission.  Such responsibilities may include maintaining the capability to formulate logistics plans, to coordinate logistics-related matters, and to insure effective logistics support for all forces in the command.")
+ (arg1Genl PolicyFormulationFn OrganizationPolicy)
+ (argGenl PolicyFormulationFn 1 OrganizationPolicy)
+ (resultGenl PolicyConcernsFn Policy)
+ (comment ManPowerAndPersonnelSupport
+ "A collection of attributes denoting various gradations of
+support involving coordination of manpower and personnel, such as a
+subordinate agency specialized to for such support might give to a
+superior #$Agent.")
+ (arg1Isa activityTypeSupervised Supervising)
+ (comment planningAndPolicyAgentInMission
+ "(#$planningAndPolicyAgentInMission MISSIONMT AGENT) means
+that AGENT has the role of providing planning and policy support to
+the unit or agency assigned to MISSIONMT.  Responsibilities associated
+with this role include, but are not limited to, assisting the
+commander in long-range or future planning, preparing operation and
+campaign plans, including COAs, and preparing situational estimates.")
+ (comment supportFromPlayer
+ "(#$supportFromPlayer SUPPORTROLE SUPPORTTYPE) means that the
+AGENT playing the role SUPPORTROLE in a given mission has as its goal
+throughout the mission execution to provide aid of type SUPPORTTYPE to
+the agent assigned to carry out the mission.")
+ (argGenl PolicyConcernsFn 1 TemporalThing)
+ (comment logisticsAgentInMission
+ "(#$logisticsAgentInMission MISSIONMT AGENT) means that AGENT
+has the role of providing logistics support to the unit or agency
+assigned to MISSIONMT.  Responsibilities associated with this role
+include, but are not limited to, assisting in the formulation of
+logistics plans, and coordination and supervision of supply,
+maintainance, repair, evacuation, transportation, and
+construction-related matters.")
+ (resultGenl PolicyFormulationFn FormulatingAPolicy)
+ (isa commanderInMission MissionSupportRole)
+ (argFormat commanderInMission 2 singleEntryFormatInArgs)
+ (isa planningAndPolicyAgentInMission MissionSupportRole)
+ (comment J3Obligation
+ "Collection of #$Obligation instances characteristic of the unit/agent playing the role of #$operationsAgentInMission.  Such responsibilities may include maintaining the capability to assist in the direction, control, and planning of operations.")
+ (genls J1Obligation Obligation)
+ (genls J5Obligation Obligation)
+ (comment IntelligenceSupport
+ "A collection of attributes denoting various gradations of
+intelligence support such that a subordinate agency specialized for
+intelligence operations might give to a superior
+organization.  Intelligence here may be construed to mean information
+about the capabilities, intentions, and methodologies of threat and
+non-aligned forces in a competitive scenario.")
+ (comment supportAgentHasObligations
+ "(#$supportAgentHasObligations AGENT MISSION OBG) means that
+AGENT is playing a supporting role with respect to the
+#$Mission-AssignedActionType instance MISSION, such that its
+obligations in that supporting role are detailed in the instance of
+#$Obligation, OBG.  AGENT is potentially a subordinate unit or a
+systems support nexus like an #$Enclave instance.")
+ (comment commanderInMission "This predicate relates an instance of
+#$Mission-AssignedActionType to the agent, usually a person, that is
+the commander in charge of planning and carrying out the mission. In
+military planning contexts every mission is assigned to a commander, which
+is also the commander of the largest unit charged with carrying out the
+mission.")
+ (comment J1Obligation
+ "Collection of #$Obligation instances characteristic of the unit/agent playing the role of #$manPowerAndPersonnelAgentInMission. Such responsibilities may include maintaining a capability to manage manpower, formulate personnel policy, and supervise administration of personnel, including civilians and prisoners of war.")
+ (isa manPowerAndPersonnelAgentInMission MissionSupportRole)
+ (arg2Format commanderInMission singleEntryFormatInArgs)
+ (comment FormulatingAPolicy
+ "The collection of all instances of preparing a plan such
+that the #$products of the planning is an instance of
+#$OrganizationPolicy.")
+ (argIsa activityTypeSupervised 1 Supervising)
+ (argIsa supportFromPlayer 1 MissionSupportRole)
+ (comment PolicyFormulationFn
+ "(#$PolicyFormulationFn POLICY_TYPE) returns the collection
+of all instances of #$FormulatingAPolicy that have as their #$products
+instances of POLICY_TYPE.  Thus, (#$PolicyFormulationFn
+(#$PolicyConcernsFn #$MilitaryPerson)) would return the collection of
+all instances of #$FormulatingAPolicy such that the resulting
+#$OrganizationPolicy concerned persons in the military.")
+ (comment operationsAgentInMission
+ "(#$operationsAgentInMission MISSIONMT AGENT) means that
+AGENT has the role of providing operations support to the unit or
+agency assigned to MISSIONMT.  Responsibilities associated with this
+role include, but are not limited to, assisting in the direction and
+control of unit operations, and planning, coordinating, and
+integrating operations.")
+ (isa J4Obligation JointStaffResponsibilityType)
+ (comment SpecialStaffSupport
+ "A collection of attributes denoting various gradations of
+support involving special staff elements, such as a subordinate agency
+specialized for such support might provide a superior agent.")
+ (typeGenls JointStaffResponsibilityType Obligation)
+ (isa J2Obligation JointStaffResponsibilityType)
+ (comment AdministeringPrisonersOfWar
+ "Collection of instances of #$AdministeringPersonnel such
+that the individuals subject to administration are POWs.")
+ (comment AdministeringCivilians
+ "Collection of instances of #$AdministeringPersonnel such that 
+the individuals subject to administration are civilians.")
+ (comment J2Obligation
+ "Collection of #$Obligation instances characteristic of the unit/agent playing the role of #$intelligenceAgentInMission.  Such responsibilities may include maintaining the capability to insure availability of sound intelligence for the commander, to direct intelligence efforts to appropriate quarters, and to disclose threat force capabilities and intentions.")

@@ -1,0 +1,85 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "agentic-aegis"
+version = "0.1.0"
+description = "Architectural Ethics Guard for Intelligent Systems"
+requires-python = ">=3.12"
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE", "licenses/*"]
+authors = [{name = "Frank Csehan"}]
+keywords = ["agents", "governance", "deontic-logic", "policy", "MELD"]
+dependencies = []
+
+[project.optional-dependencies]
+api = [
+    "fastapi>=0.110",
+    "uvicorn>=0.27",
+    "pydantic>=2.0",
+]
+ops = [
+    "structlog>=24.1",
+    "prometheus-client>=0.20",
+    "opentelemetry-api>=1.22",
+    "opentelemetry-sdk>=1.22",
+    "opentelemetry-exporter-otlp>=1.22",
+    "pydantic-settings>=2.1",
+]
+dev = [
+    "pytest>=8.0",
+    "pytest-benchmark>=4.0",
+    "pytest-timeout>=2.2",
+    "hypothesis>=6.92",
+    "mypy>=1.8",
+    "ruff>=0.3",
+    "pyyaml>=6.0",
+    "httpx>=0.27",
+    "build>=1.2",
+]
+editor = [
+    "fastapi>=0.110",
+    "uvicorn>=0.27",
+    "pydantic>=2.0",
+]
+redteam = ["pyyaml>=6.0"]
+
+[project.scripts]
+aegis-editor = "aegis.editor.app:main"
+aegis = "aegis.cli:main"
+aegis-redteam = "aegis.redteam.cli:main"
+aegis-redteam-ci = "aegis.redteam.ci:run_ci_gate"
+
+[tool.mypy]
+strict = true
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "e2e: end-to-end tests requiring full stack",
+    "benchmark: performance benchmark tests",
+    "handbook_tutorial: snippet tests for docs/handbook/tutorial/ (DOC-0108)",
+    "handbook_example: snippet tests for docs/handbook/examples/ (DOC-0808)",
+    "handbook_snippet: full snippet-runner over docs/handbook/ (DOC-1003)",
+    "live_opencode: live OpenCode↔Sidecar↔LLM E2E tests (AEGIS-3601, opt-in via AEGIS_LIVE=1)",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["aegis"]
+exclude = ["aegis/editor/frontend/**"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"aegis/editor/frontend/dist" = "aegis/editor/frontend/dist"
+
+[tool.hatch.build.targets.sdist]
+include = ["aegis", "tests", "scenarios", "docs", "spec", "scripts", "integrations", ".github", "licenses", "*.md", "LICENSE", "NOTICE", "pyproject.toml", "ruff.toml"]
+exclude = ["**/node_modules", "**/__pycache__", "**/*.tsbuildinfo", "**/test-results", "**/playwright-report", "**/dist", "**/.cache", "**/.cache/**", "**/.runs", "**/.runs/**"]
+
+[tool.hatch.build.targets.sdist.force-include]
+"aegis/editor/frontend/dist" = "aegis/editor/frontend/dist"

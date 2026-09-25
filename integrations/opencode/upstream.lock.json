@@ -1,0 +1,31 @@
+{
+  "repository": "https://github.com/anomalyco/opencode",
+  "release": "v1.18.32",
+  "commit": "545f51d26cc39a907d2867492d498d9607ea5fa4",
+  "source": {
+    "url": "https://codeload.github.com/anomalyco/opencode/tar.gz/545f51d26cc39a907d2867492d498d9607ea5fa4",
+    "sha256": "9c7ae695989dd2db9641ff0ba1c151db45c953539d76a03ac6472a97c81fb53c"
+  },
+  "artifacts": {
+    "darwin-arm64": {
+      "url": "https://github.com/anomalyco/opencode/releases/download/v1.18.32/opencode-darwin-arm64.zip",
+      "sha256": "fa643f93401c13508d8d513780e54ce9cc01203d501114be9b88d62408b8101f"
+    },
+    "darwin-x64": {
+      "url": "https://github.com/anomalyco/opencode/releases/download/v1.18.32/opencode-darwin-x64.zip",
+      "sha256": "a24bf10499382f8855e19d2a081b8683e4ab99c7c2affb32dc89b17c8a00ccd6"
+    },
+    "linux-x64": {
+      "url": "https://github.com/anomalyco/opencode/releases/download/v1.18.32/opencode-linux-x64-baseline.tar.gz",
+      "sha256": "763af386ef88a8cab18df00fcf055690e5a55e31a7088beabe02307142a6adce"
+    },
+    "linux-arm64": {
+      "url": "https://github.com/anomalyco/opencode/releases/download/v1.18.32/opencode-linux-arm64.tar.gz",
+      "sha256": "568461b7d4d8c19865c97e9a1102e613049c6039d01fe772154de873c1865840"
+    }
+  },
+  "integration": "local-plugin",
+  "host_patch": null,
+  "node_test_major": 22,
+  "upstream_build_bun": "1.3.14"
+}

@@ -1,0 +1,40 @@
+name: CI
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: aegis/editor/frontend/package-lock.json
+      - run: npm --prefix aegis/editor/frontend ci
+      - run: npm --prefix aegis/editor/frontend run build
+      - run: python -m pip install -e '.[editor,ops,redteam,dev]'
+      - run: ruff check --select E9,F63,F7,F82 aegis tests
+      - run: python -m pytest -q
+      - run: npm --prefix aegis/editor/frontend run lint
+      - run: npm --prefix aegis/editor/frontend test
+      - run: npm --prefix aegis/editor/frontend exec -- playwright install --with-deps chromium
+      - run: npm --prefix aegis/editor/frontend run test:e2e
+        env:
+          AEGIS_TEST_PYTHON: python
+      - run: python -m build
+      - run: python scripts/check_release.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: python-distributions
+          path: dist/*

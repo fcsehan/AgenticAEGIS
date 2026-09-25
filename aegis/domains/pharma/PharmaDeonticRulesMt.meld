@@ -1,0 +1,38 @@
+(aegis-schema-version 1)
+(case PharmaDeonticRulesMt)
+
+;; ── PharmaCompliance Code ──────────────────────
+
+;; Prescribing with major interaction is FORBIDDEN
+(forbiddenToDo-WRT PharmaCompliance prescribingAgent (prescribeMedication controlledSubstance majorInteraction))
+
+;; Prescribing with minor interaction is PERMITTED
+(permittedToDo-WRT PharmaCompliance prescribingAgent (prescribeMedication prescription minorInteraction))
+
+;; Prescribing OTC is PERMITTED for all pharma roles
+(permittedToDo-WRT PharmaCompliance prescribingAgent (prescribeMedication overTheCounter minorInteraction))
+
+;; Reporting adverse events is always PERMITTED
+(permittedToDo-WRT PharmaCompliance prescribingAgent (reportAdverseEvent majorInteraction))
+(permittedToDo-WRT PharmaCompliance assistantAgent (reportAdverseEvent majorInteraction))
+(permittedToDo-WRT PharmaCompliance pharmacistAgent (reportAdverseEvent majorInteraction))
+
+;; Distributing experimental compounds is FORBIDDEN
+(forbiddenToDo-WRT PharmaCompliance prescribingAgent (approveDistribution experimental phase1))
+(forbiddenToDo-WRT PharmaCompliance prescribingAgent (approveDistribution experimental phase2))
+
+;; Distributing approved medications is PERMITTED
+(permittedToDo-WRT PharmaCompliance prescribingAgent (approveDistribution approved postMarket))
+
+;; Assistant cannot recommend dosage without supervision
+(forbiddenToDo-WRT PharmaCompliance assistantAgent (recommendDosage controlledSubstance))
+
+;; ── PharmaEmergencyCode (higher prevalence) ────
+
+;; Override allowed with documented approval (defeasible exception)
+(permittedToDo-WRT PharmaEmergencyCode prescribingAgent (overrideInteraction approved))
+
+;; ── Moral Axioms (non-defeasible) ──────────────
+
+;; Withdrawn medications can NEVER be distributed
+(forbiddenToDo prescribingAgent (approveDistribution withdrawn postMarket))

@@ -1,0 +1,97 @@
+(aegis-schema-version 1)
+(case IAMissionDeonticRulesMt)
+
+;; ============================================================================
+;; IAMission Deontic Rules — CycL expression of the mission obligation norms
+;; ============================================================================
+;;
+;; These rules translate the IAMission domain obligations into formal
+;; deontic assertions.  The vocabulary is from IAMissionObligationVocabMt.
+;; The prototype expressed these as Clingo/ASP rules in core.lp;
+;; here they are expressed as CycL deontic assertions.
+;;
+;; Hierarchy: Moral axioms (non-defeasible) > IAMissionCode > defaults
+;; ============================================================================
+
+;; --- Intelligence sharing rules (J2 Obligations) ---
+
+;; Intelligence agent MAY share unclassified intelligence with the commander
+(permittedToDo-WRT IAMissionCode intelligenceAgentInMission
+    (shareIntelligence unclassified commanderInMission))
+
+;; Intelligence agent MAY share classified intelligence with the commander
+(permittedToDo-WRT IAMissionCode intelligenceAgentInMission
+    (shareIntelligence classified commanderInMission))
+
+;; Intelligence agent MUST NOT share secret intelligence with external services
+(forbiddenToDo-WRT IAMissionCode intelligenceAgentInMission
+    (shareIntelligence secret externalService))
+
+;; Intelligence agent MUST NOT share top-secret intelligence with anyone
+;; except the commander
+(forbiddenToDo-WRT IAMissionCode intelligenceAgentInMission
+    (shareIntelligence topSecret alliedNation))
+
+;; Intelligence agent OUGHT to request intelligence routinely
+(oughtToDo-WRT IAMissionCode intelligenceAgentInMission
+    (requestIntelligence routine))
+
+;; --- Operations rules (J3 Obligations) ---
+
+;; Operations agent MAY direct standard operations
+(permittedToDo-WRT IAMissionCode operationsAgentInMission
+    (directOperations standard))
+
+;; Operations agent MUST NOT share classified intelligence externally
+(forbiddenToDo-WRT IAMissionCode operationsAgentInMission
+    (shareIntelligence classified externalService))
+
+;; --- Cross-role rules ---
+
+;; No agent may send personal data to external services
+;; This is a MORAL AXIOM — non-defeasible (mirrors core.lp Constraint 1)
+(forbiddenToDo personalStaffAgentInMission
+    (sendDataExternal personal externalService))
+(forbiddenToDo intelligenceAgentInMission
+    (sendDataExternal personal externalService))
+(forbiddenToDo operationsAgentInMission
+    (sendDataExternal personal externalService))
+
+;; No agent may send medical data externally
+;; (mirrors core.lp Constraint 2)
+(forbiddenToDo personalStaffAgentInMission
+    (sendDataExternal medical externalService))
+(forbiddenToDo intelligenceAgentInMission
+    (sendDataExternal medical externalService))
+
+;; Delete actions are forbidden by default
+;; (mirrors core.lp Constraint 3 — requires human approval)
+(forbiddenToDo intelligenceAgentInMission (deleteRecord any))
+(forbiddenToDo operationsAgentInMission (deleteRecord any))
+(forbiddenToDo personalStaffAgentInMission (deleteRecord any))
+
+;; --- Logistics (J4 Obligations) ---
+
+;; Logistics agent MAY provide standard logistics support
+(permittedToDo-WRT IAMissionCode logisticsAgentInMission
+    (provideLogisticsSupport standard))
+
+;; --- Planning and Policy (J5 Obligations) ---
+
+;; Planning agent MAY formulate policy
+(permittedToDo-WRT IAMissionCode planningAndPolicyAgentInMission
+    (formulatePolicy standard))
+
+;; --- C4 / Communications (J6 Obligations) ---
+
+;; C4 agent MAY communicate with commander
+(permittedToDo-WRT IAMissionCode c4AgentInMission
+    (communicateWithCommander standard))
+
+;; --- Public data sharing (explicitly permitted) ---
+
+;; Any mission support role MAY share public/unclassified data internally
+(permittedToDo intelligenceAgentInMission
+    (sendDataExternal public internalAgent))
+(permittedToDo operationsAgentInMission
+    (sendDataExternal public internalAgent))

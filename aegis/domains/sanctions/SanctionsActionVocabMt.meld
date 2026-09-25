@@ -1,0 +1,18 @@
+(aegis-schema-version 1)
+(case SanctionsActionVocabMt)
+
+;; ── Action Types ───────────────────────────────
+(isa approveTransaction ActionType)
+(isa flagEntity ActionType)
+(isa releaseShipment ActionType)
+(isa processPayment ActionType)
+(isa supplyHumanitarianAid ActionType)
+
+;; ── Action Parameters ──────────────────────────
+(actionParameter approveTransaction sanctionStatus SanctionStatus)
+(actionParameter approveTransaction destination DestinationType)
+(actionParameter flagEntity sanctionStatus SanctionStatus)
+(actionParameter releaseShipment goodsType GoodsType)
+(actionParameter releaseShipment destination DestinationType)
+(actionParameter processPayment sanctionStatus SanctionStatus)
+(actionParameter supplyHumanitarianAid destination DestinationType)

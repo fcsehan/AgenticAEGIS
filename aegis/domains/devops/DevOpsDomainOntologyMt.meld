@@ -1,0 +1,41 @@
+(aegis-schema-version 1)
+(case DevOpsDomainOntologyMt)
+
+;; ── Agent Roles ────────────────────────────────
+(isa opencodeAgent DevOpsRole)
+(isa developerAgent DevOpsRole)
+(isa ciAgent DevOpsRole)
+(genls DevOpsRole IntelligentAgent)
+
+;; ── File Categories ────────────────────────────
+(isa sourceFile FileCategory)
+(isa configFile FileCategory)
+(isa sensitiveConfig FileCategory)
+(isa testFile FileCategory)
+(isa documentFile FileCategory)
+(genls sensitiveConfig configFile)
+
+;; ── Command Categories ─────────────────────────
+(isa safeCommand CommandCategory)
+(isa destructiveCommand CommandCategory)
+(isa networkCommand CommandCategory)
+(isa containerCommand CommandCategory)
+(isa permissionCommand CommandCategory)
+
+;; ── Target Types ───────────────────────────────
+(isa localFileSystem TargetType)
+(isa gitRepository TargetType)
+(isa externalNetwork TargetType)
+(isa containerRuntime TargetType)
+
+;; ── Deontic Infrastructure ─────────────────────
+(genlPreds oughtToDo-WRT permittedToDo-WRT)
+(negationPreds oughtToDo forbiddenToDo)
+(negationPreds permittedToDo forbiddenToDo)
+(negationPreds permittedToDo-WRT forbiddenToDo-WRT)
+
+;; ── State Predicates (AEGIS-2712, Epic 27) ─────
+;; State referenced by plan-constraint requirePrecondition.
+(isa testStatus StatePredicate)
+(isa buildStatus StatePredicate)
+(isa approvalFrom StatePredicate)

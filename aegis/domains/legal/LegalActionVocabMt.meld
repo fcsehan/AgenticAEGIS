@@ -1,0 +1,21 @@
+(aegis-schema-version 1)
+(case LegalActionVocabMt)
+
+;; ── Action Types ───────────────────────────────
+(isa sendPersonalData ActionType)
+(isa deleteData ActionType)
+(isa processData ActionType)
+(isa approveContract ActionType)
+(isa shareDocument ActionType)
+(isa flagClause ActionType)
+
+;; ── Action Parameters ──────────────────────────
+(actionParameter sendPersonalData dataCategory DataCategory)
+(actionParameter sendPersonalData recipient RecipientType)
+(actionParameter deleteData dataCategory DataCategory)
+(actionParameter processData legalBasis LegalBasis)
+(actionParameter processData dataCategory DataCategory)
+(actionParameter approveContract contractType ContractType)
+(actionParameter shareDocument privilegeStatus PrivilegeStatus)
+(actionParameter shareDocument recipient RecipientType)
+(actionParameter flagClause contractType ContractType)

@@ -1,0 +1,44 @@
+# Python and local tools
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.benchmarks/
+.coverage
+htmlcov/
+
+# Frontend
+node_modules/
+*.tsbuildinfo
+test-results/
+playwright-report/
+
+# Local configuration, projects, logs and credentials
+.env
+.env.*
+!.env.example
+.aegis-editor/
+.editor-config/
+workspace/
+*.jsonl
+*.log
+*.pem
+*.key
+
+# Editors / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Downloaded OpenCode and generated integration evidence
+integrations/opencode/.cache/
+integrations/opencode/.runs/

@@ -1,0 +1,6 @@
+(case TestDeonticRulesMt)
+(permittedToDo-WRT TestCode intelligenceAgent (shareIntelligence unclassified))
+(forbiddenToDo-WRT TestCode intelligenceAgent (shareIntelligence secret))
+(forbiddenToDo-WRT TestCode operationsAgent (shareIntelligence classified))
+(permittedToDo-WRT TestCode operationsAgent (directOperations standard))
+(oughtToDo-WRT TestCode intelligenceAgent (requestIntelligence routine))

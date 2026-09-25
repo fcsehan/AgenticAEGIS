@@ -1,0 +1,10 @@
+* text=auto eol=lf
+# Preserve whitespace in third-party knowledge extracts and legal notices.
+aegis/domains/iamission/DeonticReasoning-InferenceMt.meld -whitespace
+aegis/domains/iamission/DeonticReasoning-LogicMt.meld -whitespace
+aegis/domains/iamission/DeonticReasoningWithMultiFuture-LogicMt.meld -whitespace
+aegis/domains/iamission/IAMissionObligationVocabMt.meld -whitespace
+licenses/* -whitespace
+
+# Unified-diff context lines intentionally contain a leading space.
+integrations/opencode/patches/*.patch -whitespace

@@ -1,0 +1,72 @@
+(aegis-schema-version 1)
+(case DevOpsDeonticRulesMt)
+
+;; ── DevSecOps Code ────────────────────────────────
+;; Sensible defaults for LLM-driven development workflows.
+;; These rules apply to any agent operating through OpenCode.
+
+;; ── Reading: generally PERMITTED ──────────────────
+(permittedToDo-WRT DevSecOps opencodeAgent (readFile sourceFile))
+(permittedToDo-WRT DevSecOps opencodeAgent (readFile configFile))
+(permittedToDo-WRT DevSecOps opencodeAgent (readFile testFile))
+(permittedToDo-WRT DevSecOps opencodeAgent (readFile documentFile))
+(permittedToDo-WRT DevSecOps opencodeAgent (searchFiles sourceFile))
+
+;; ── Writing source/test/doc files: PERMITTED ──────
+(permittedToDo-WRT DevSecOps opencodeAgent (modifyFile sourceFile))
+(permittedToDo-WRT DevSecOps opencodeAgent (modifyFile testFile))
+(permittedToDo-WRT DevSecOps opencodeAgent (modifyFile documentFile))
+
+;; ── Safe commands: PERMITTED ──────────────────────
+(permittedToDo-WRT DevSecOps opencodeAgent (executeCommand safeCommand))
+
+;; ── Sensitive config: FORBIDDEN ───────────────────
+;; .env, credentials, private keys — never touched by the agent
+(forbiddenToDo-WRT DevSecOps opencodeAgent (modifySensitiveConfig sensitiveConfig))
+(forbiddenToDo-WRT DevSecOps opencodeAgent (readFile sensitiveConfig))
+
+;; ── Destructive operations: FORBIDDEN ─────────────
+(forbiddenToDo-WRT DevSecOps opencodeAgent (deleteFile sourceFile))
+(forbiddenToDo-WRT DevSecOps opencodeAgent (deleteFile configFile))
+(forbiddenToDo-WRT DevSecOps opencodeAgent (forceModifyRepository gitRepository))
+
+;; ── External exfiltration: FORBIDDEN ──────────────
+(forbiddenToDo-WRT DevSecOps opencodeAgent (accessExternalResource externalNetwork))
+(forbiddenToDo-WRT DevSecOps opencodeAgent (executeRemoteCode networkCommand))
+
+;; ── Container execution: FORBIDDEN ────────────────
+(forbiddenToDo-WRT DevSecOps opencodeAgent (executeContainer containerCommand))
+
+;; ── Permission changes: FORBIDDEN ─────────────────
+(forbiddenToDo-WRT DevSecOps opencodeAgent (modifyPermissions localFileSystem))
+
+;; ── Unknown actions: FORBIDDEN ────────────────────
+(forbiddenToDo-WRT DevSecOps opencodeAgent (unknownAction localFileSystem))
+
+;; ── Moral Axioms (non-defeasible) ─────────────────
+
+;; Remote code execution: absolute prohibition
+(forbiddenToDo opencodeAgent (executeRemoteCode networkCommand))
+;; Force-push: absolute prohibition (can destroy shared history)
+(forbiddenToDo opencodeAgent (forceModifyRepository gitRepository))
+
+;; ── CI/CD Action Permissions (AEGIS-2712, Epic 27) ─
+;; ciAgent runs the build/test/deploy chain. Plan-level constraints
+;; in DevOpsPlanNormsMt enforce ordering, aggregates, timing, and
+;; preconditions; the action-level permits below ensure that
+;; per-step Guard.check returns PERMITTED when the plan-level
+;; analysis is otherwise satisfied.
+(permittedToDo ciAgent buildArtifact)
+(permittedToDo ciAgent testArtifact)
+(permittedToDo ciAgent deployArtifact)
+(permittedToDo ciAgent emergencyRollback)
+(permittedToDo ciAgent requestApproval)
+(permittedToDo ciAgent reportIncident)
+(permittedToDo ciAgent modifySensitiveConfig)
+(permittedToDo ciAgent forceModifyRepository)
+
+;; Reporting obligation. Used by Plan-Level Governance with
+;; require_obligation_coverage=True (opt-in; default off, so this
+;; obligation is decorative in baseline runs and only becomes
+;; operational when a domain consumer flips the coverage flag).
+(oughtToDo ciAgent reportIncident)

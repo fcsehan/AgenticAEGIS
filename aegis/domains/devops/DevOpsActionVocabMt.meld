@@ -1,0 +1,37 @@
+(aegis-schema-version 1)
+(case DevOpsActionVocabMt)
+
+;; ── Action Types ───────────────────────────────
+(isa readFile ActionType)
+(isa modifyFile ActionType)
+(isa deleteFile ActionType)
+(isa searchFiles ActionType)
+(isa executeCommand ActionType)
+(isa executeRemoteCode ActionType)
+(isa executeContainer ActionType)
+(isa accessExternalResource ActionType)
+(isa forceModifyRepository ActionType)
+(isa modifySensitiveConfig ActionType)
+(isa modifyPermissions ActionType)
+(isa unknownAction ActionType)
+
+;; ── CI/CD Action Types (AEGIS-2712, Epic 27) ───
+(isa buildArtifact ActionType)
+(isa testArtifact ActionType)
+(isa deployArtifact ActionType)
+(isa emergencyRollback ActionType)
+(isa requestApproval ActionType)
+(isa reportIncident ActionType)
+
+;; ── Action Parameters ──────────────────────────
+(actionParameter readFile path FileCategory)
+(actionParameter modifyFile path FileCategory)
+(actionParameter deleteFile path FileCategory)
+(actionParameter searchFiles pattern FileCategory)
+(actionParameter executeCommand command CommandCategory)
+(actionParameter executeRemoteCode command CommandCategory)
+(actionParameter executeContainer command CommandCategory)
+(actionParameter accessExternalResource url TargetType)
+(actionParameter forceModifyRepository command CommandCategory)
+(actionParameter modifySensitiveConfig path FileCategory)
+(actionParameter modifyPermissions path FileCategory)

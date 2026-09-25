@@ -1,0 +1,55 @@
+(aegis-schema-version 1)
+(case InformationFlowActionVocabMt)
+
+;; ── Action Types ───────────────────────────────
+(isa discoverSources ActionType)
+(isa searchCorpus ActionType)
+(isa readDocument ActionType)
+(isa extractFacts ActionType)
+(isa summarizeInformation ActionType)
+(isa compareInformation ActionType)
+(isa classifyInformation ActionType)
+(isa discloseInformation ActionType)
+(isa exportInformation ActionType)
+
+;; ── Action Parameters ──────────────────────────
+
+;; discoverSources: find available information sources
+(actionParameter discoverSources purpose PurposeCategory)
+(actionParameter discoverSources scope ScopeCategory)
+
+;; searchCorpus: search across a corpus of documents
+(actionParameter searchCorpus sourceClassification ClassificationLevel)
+(actionParameter searchCorpus purpose PurposeCategory)
+
+;; readDocument: read a specific document
+(actionParameter readDocument sourceClassification ClassificationLevel)
+(actionParameter readDocument purpose PurposeCategory)
+
+;; extractFacts: extract facts from a document
+(actionParameter extractFacts sourceClassification ClassificationLevel)
+(actionParameter extractFacts purpose PurposeCategory)
+(actionParameter extractFacts targetClassification ClassificationLevel)
+
+;; summarizeInformation: summarize information
+(actionParameter summarizeInformation sourceClassification ClassificationLevel)
+(actionParameter summarizeInformation targetClassification ClassificationLevel)
+(actionParameter summarizeInformation recipient Recipient)
+
+;; compareInformation: compare across sources
+(actionParameter compareInformation sourceClassification ClassificationLevel)
+(actionParameter compareInformation purpose PurposeCategory)
+
+;; classifyInformation: assign or change classification
+(actionParameter classifyInformation sourceClassification ClassificationLevel)
+(actionParameter classifyInformation targetClassification ClassificationLevel)
+
+;; discloseInformation: disclose information to a recipient
+(actionParameter discloseInformation sourceClassification ClassificationLevel)
+(actionParameter discloseInformation recipient Recipient)
+(actionParameter discloseInformation purpose PurposeCategory)
+
+;; exportInformation: export information to external systems
+(actionParameter exportInformation sourceClassification ClassificationLevel)
+(actionParameter exportInformation recipient Recipient)
+(actionParameter exportInformation transformationType TransformationType)

@@ -1,0 +1,591 @@
+diff --git a/packages/opencode/src/config/config.ts b/packages/opencode/src/config/config.ts
+index c464fcb64..a3d00c0e2 100644
+--- a/packages/opencode/src/config/config.ts
++++ b/packages/opencode/src/config/config.ts
+@@ -1227,6 +1227,27 @@ export namespace Config {
+             .describe("Timeout in milliseconds for model context protocol (MCP) requests"),
+         })
+         .optional(),
++      aegis: z
++        .object({
++          guardUrl: z.string().optional().describe("AEGIS Guard sidecar URL (default: http://localhost:8000)"),
++          agentId: z.string().optional().describe("Agent identifier for Guard verdicts"),
++          mapping: z
++            .record(z.string(), z.string())
++            .optional()
++            .describe("Tool→action_type overrides"),
++          taintPatterns: z
++            .array(z.string())
++            .optional()
++            .describe("Additional taint detection regex patterns"),
++          taintTtlMs: z
++            .number()
++            .int()
++            .positive()
++            .optional()
++            .describe("Taint entry TTL in milliseconds (default: session-scoped)"),
++        })
++        .optional()
++        .describe("AEGIS Guard configuration — enables deontic policy enforcement on tool calls"),
+     })
+     .strict()
+     .meta({
+diff --git a/packages/opencode/src/plugin/aegis.ts b/packages/opencode/src/plugin/aegis.ts
+new file mode 100644
+index 000000000..b2593bd05
+--- /dev/null
++++ b/packages/opencode/src/plugin/aegis.ts
+@@ -0,0 +1,525 @@
++/**
++ * AEGIS Guard integration for OpenCode.
++ *
++ * Enforces deontic policy on every tool call via the AEGIS Guard sidecar.
++ * Three enforcement layers:
++ *   1. permission.ask  → primary verdict (allow/deny)
++ *   2. tool.execute.before → defense-in-depth + taint check on args
++ *   3. tool.execute.after  → taint extraction from output + audit
++ *
++ * Plus an `aegis_check` transparency tool for proactive Guard queries.
++ *
++ * All enforcement is fail-closed: if the Guard is unreachable, all tools
++ * are denied.
++ */
++
++import type { Hooks, PluginInput } from "@opencode-ai/plugin"
++import { tool } from "@opencode-ai/plugin"
++import { Log } from "../util/log"
++import type { Config } from "../config/config"
++
++const log = Log.create({ service: "plugin.aegis" })
++const z = tool.schema
++
++// ---------------------------------------------------------------------------
++// Types
++// ---------------------------------------------------------------------------
++
++type Decision = "PERMITTED" | "FORBIDDEN" | "UNDECIDABLE"
++
++interface ActionRequest {
++  action_type: string
++  agent_id: string
++  proposition: Record<string, unknown>
++}
++
++interface VerdictResponse {
++  decision: Decision
++  reason_type: string
++  justification_chain: string[]
++  norms_applied: string[]
++  explanation: string
++}
++
++interface AuditEntry {
++  timestamp: string
++  tool: string
++  args: Record<string, unknown>
++  verdict: Decision | null
++  explanation: string
++  layer: "permission" | "before" | "after" | "tool"
++  taintDetected?: string[]
++}
++
++type AegisConfig = NonNullable<Config.Info["aegis"]>
++
++// ---------------------------------------------------------------------------
++// Guard Client (fail-closed HTTP client)
++// ---------------------------------------------------------------------------
++
++const FAIL_CLOSED: VerdictResponse = {
++  decision: "FORBIDDEN",
++  reason_type: "GUARD_UNREACHABLE",
++  justification_chain: ["Guard sidecar not reachable — fail-closed policy"],
++  norms_applied: [],
++  explanation: "AEGIS Guard is not reachable. All actions are denied (fail-closed). Ensure 'aegis serve' is running.",
++}
++
++class GuardClient {
++  private readonly url: string
++  private readonly timeoutMs: number
++
++  constructor(baseUrl: string, timeoutMs = 3_000) {
++    this.url = baseUrl.replace(/\/+$/, "")
++    this.timeoutMs = timeoutMs
++  }
++
++  async check(action: ActionRequest): Promise<VerdictResponse> {
++    try {
++      const ac = new AbortController()
++      const timer = setTimeout(() => ac.abort(), this.timeoutMs)
++      const res = await fetch(`${this.url}/v1/check`, {
++        method: "POST",
++        headers: { "Content-Type": "application/json" },
++        body: JSON.stringify(action),
++        signal: ac.signal,
++      })
++      clearTimeout(timer)
++      if (!res.ok) {
++        const body = await res.text().catch(() => "")
++        return { ...FAIL_CLOSED, explanation: `Guard HTTP ${res.status}: ${body}` }
++      }
++      return (await res.json()) as VerdictResponse
++    } catch (err) {
++      const msg = err instanceof Error ? err.message : String(err)
++      return { ...FAIL_CLOSED, explanation: `Guard unreachable: ${msg}` }
++    }
++  }
++
++  async health(): Promise<boolean> {
++    try {
++      const ac = new AbortController()
++      const timer = setTimeout(() => ac.abort(), 2_000)
++      const res = await fetch(`${this.url}/v1/health`, { signal: ac.signal })
++      clearTimeout(timer)
++      return res.ok
++    } catch {
++      return false
++    }
++  }
++
++  // AEGIS-2719 (Epic 27): plan-level evaluation. Mirrors the action
++  // .check() above but submits a Plan and receives a PlanVerdict.
++  // The Python reference adapter in
++  // aegis/integrations/opencode_plan_adapter.py defines the action
++  // mapping rules; this method is the transport.
++  async planCheck(plan: PlanRequest): Promise<PlanVerdictResponse> {
++    try {
++      const ac = new AbortController()
++      const timer = setTimeout(() => ac.abort(), this.timeoutMs)
++      const res = await fetch(`${this.url}/v1/plan_check`, {
++        method: "POST",
++        headers: { "Content-Type": "application/json" },
++        body: JSON.stringify(plan),
++        signal: ac.signal,
++      })
++      clearTimeout(timer)
++      if (!res.ok) {
++        const body = await res.text().catch(() => "")
++        return {
++          plan_decision: "UNDECIDABLE",
++          reason_summary: `Guard HTTP ${res.status}: ${body}`,
++          evaluation_mode: "",
++          per_step_verdicts: [],
++          violations: [],
++        }
++      }
++      return (await res.json()) as PlanVerdictResponse
++    } catch (err) {
++      const msg = err instanceof Error ? err.message : String(err)
++      return {
++        plan_decision: "UNDECIDABLE",
++        reason_summary: `Guard unreachable: ${msg}`,
++        evaluation_mode: "",
++        per_step_verdicts: [],
++        violations: [],
++      }
++    }
++  }
++}
++
++// ---------------------------------------------------------------------------
++// Plan-Adapter types (AEGIS-2719)
++// ---------------------------------------------------------------------------
++
++export interface PlanStepRequest {
++  action_type: string
++  agent_id: string
++  proposition?: Record<string, unknown>
++  context?: Record<string, unknown>
++  step_id?: string
++  scheduled_duration_s?: number
++  pre_state?: Record<string, unknown>
++  post_state?: Record<string, unknown>
++}
++
++export interface PlanRequest {
++  plan_id?: string
++  initial_state?: Record<string, unknown>
++  steps: PlanStepRequest[]
++}
++
++export interface PlanViolationDTO {
++  violation_type: string
++  step_index: number
++  constraint_id: string
++  detail: string
++}
++
++export interface PlanStepVerdictDTO {
++  decision: string
++  reason_type: string
++  action_type: string
++  agent_id: string
++}
++
++export interface PlanVerdictResponse {
++  plan_decision: string
++  reason_summary: string
++  evaluation_mode: string
++  per_step_verdicts: PlanStepVerdictDTO[]
++  violations: PlanViolationDTO[]
++}
++
++// ---------------------------------------------------------------------------
++// Action Mapper (tool name + args → AEGIS action_type)
++// ---------------------------------------------------------------------------
++
++interface PatternMapping {
++  pattern: string
++  actionType: string
++}
++
++interface ToolMapping {
++  default: string
++  patterns?: PatternMapping[]
++}
++
++type MappingTable = Record<string, string | ToolMapping>
++
++const BASH_PATTERNS: PatternMapping[] = [
++  { pattern: "\\brm\\b.*-r", actionType: "deleteFile" },
++  { pattern: "\\brm\\b", actionType: "deleteFile" },
++  { pattern: "curl.*\\|\\s*(sh|bash)", actionType: "executeRemoteCode" },
++  { pattern: "wget.*\\|\\s*(sh|bash)", actionType: "executeRemoteCode" },
++  { pattern: "git\\s+push\\s+--force", actionType: "forceModifyRepository" },
++  { pattern: "git\\s+push\\s+-f\\b", actionType: "forceModifyRepository" },
++  { pattern: "git\\s+reset\\s+--hard", actionType: "forceModifyRepository" },
++  { pattern: "docker\\s+run\\b", actionType: "executeContainer" },
++  { pattern: "\\bchmod\\b", actionType: "modifyPermissions" },
++  { pattern: "\\bchown\\b", actionType: "modifyPermissions" },
++]
++
++const WRITE_PATTERNS: PatternMapping[] = [
++  { pattern: "\\.env(\\b|\\.)", actionType: "modifySensitiveConfig" },
++  { pattern: "credentials", actionType: "modifySensitiveConfig" },
++  { pattern: "\\.pem$", actionType: "modifySensitiveConfig" },
++  { pattern: "\\.key$", actionType: "modifySensitiveConfig" },
++  { pattern: "id_rsa", actionType: "modifySensitiveConfig" },
++]
++
++const DEFAULT_MAPPING: MappingTable = {
++  bash: { default: "executeCommand", patterns: BASH_PATTERNS },
++  write: { default: "modifyFile", patterns: WRITE_PATTERNS },
++  edit: { default: "modifyFile", patterns: WRITE_PATTERNS },
++  read: "readFile",
++  glob: "searchFiles",
++  grep: "searchFiles",
++  webfetch: "accessExternalResource",
++  fetch: "accessExternalResource",
++}
++
++const UNKNOWN_ACTION = "unknownAction"
++
++function resolveAction(table: MappingTable, toolName: string, args: Record<string, unknown>): string {
++  const entry = table[toolName]
++  if (entry === undefined) return UNKNOWN_ACTION
++  if (typeof entry === "string") return entry
++  if (entry.patterns) {
++    const haystack = Object.values(args)
++      .map((v) => (typeof v === "string" ? v : JSON.stringify(v)))
++      .join(" ")
++    for (const p of entry.patterns) {
++      if (new RegExp(p.pattern, "i").test(haystack)) return p.actionType
++    }
++  }
++  return entry.default
++}
++
++function buildProposition(toolName: string, args: Record<string, unknown>): Record<string, unknown> {
++  if (toolName === "bash" && typeof args.command === "string") return { command: args.command }
++  if (typeof args.file_path === "string") return { path: args.file_path }
++  if (typeof args.path === "string") return { path: args.path }
++  if (typeof args.url === "string") return { url: args.url }
++  if (typeof args.pattern === "string") return { pattern: args.pattern }
++  return { ...args }
++}
++
++// ---------------------------------------------------------------------------
++// Taint Tracker (session-scoped sensitive data detection)
++// ---------------------------------------------------------------------------
++
++const DEFAULT_TAINT_PATTERNS: RegExp[] = [
++  // AEGIS canary tokens (e.g. TS-FOXHOUND-7A3B9C, CANARY-ABCDEF-1234)
++  /\b(?:CANARY|TS)-[A-Z]+-[A-Z0-9]{4,}\b/,
++  /(?:api[_-]?key|api[_-]?secret|token)\s*[:=]\s*["']?([\w\-./]{16,})/i,
++  /AKIA[0-9A-Z]{16}/,
++  /(?:password|passwd|secret)\s*[:=]\s*["']?([^\s"']{8,})/i,
++  /-----BEGIN (?:RSA |EC |DSA )?PRIVATE KEY-----/,
++  /eyJ[A-Za-z0-9_-]{10,}\.eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]+/,
++  /(?:postgres|mysql|mongodb|redis):\/\/[^\s]+/i,
++]
++
++const SCANNABLE_TOOLS = new Set(["read", "grep", "glob", "bash", "shell", "webfetch", "fetch"])
++
++class TaintTracker {
++  private entries = new Map<string, { source: string; detectedAt: number; ttlMs: number }>()
++  private readonly patterns: RegExp[]
++  private readonly defaultTtlMs: number
++
++  constructor(customPatterns?: string[], ttlMs?: number) {
++    this.defaultTtlMs = ttlMs ?? Infinity
++    this.patterns = [...DEFAULT_TAINT_PATTERNS, ...(customPatterns ?? []).map((p) => new RegExp(p, "gi"))]
++  }
++
++  scan(text: string, source: string): string[] {
++    const found: string[] = []
++    for (const pattern of this.patterns) {
++      const re = new RegExp(pattern.source, "gi")
++      let match: RegExpExecArray | null
++      while ((match = re.exec(text)) !== null) {
++        const value = match[1] ?? match[0]
++        if (!this.entries.has(value)) {
++          this.entries.set(value, { source, detectedAt: Date.now(), ttlMs: this.defaultTtlMs })
++          found.push(value)
++        }
++        if (match.index === re.lastIndex) re.lastIndex++
++      }
++    }
++    return found
++  }
++
++  check(text: string): string[] {
++    this.evict()
++    const matches: string[] = []
++    for (const [value] of this.entries) {
++      if (text.includes(value)) matches.push(value)
++    }
++    return matches
++  }
++
++  private evict() {
++    const now = Date.now()
++    for (const [key, entry] of this.entries) {
++      if (entry.ttlMs !== Infinity && now - entry.detectedAt > entry.ttlMs) this.entries.delete(key)
++    }
++  }
++}
++
++// ---------------------------------------------------------------------------
++// Audit Log (in-memory session buffer)
++// ---------------------------------------------------------------------------
++
++class AuditLog {
++  private entries: AuditEntry[] = []
++
++  record(
++    toolName: string,
++    args: Record<string, unknown>,
++    verdict: Decision | null,
++    explanation: string,
++    layer: AuditEntry["layer"],
++    taintDetected?: string[],
++  ) {
++    this.entries.push({ timestamp: new Date().toISOString(), tool: toolName, args, verdict, explanation, layer, taintDetected })
++  }
++
++  all(): readonly AuditEntry[] {
++    return [...this.entries]
++  }
++}
++
++// ---------------------------------------------------------------------------
++// Verdict Cache (avoids double Guard calls between permission.ask and before)
++// ---------------------------------------------------------------------------
++
++class VerdictCache {
++  private cache = new Map<string, VerdictResponse>()
++
++  set(key: string, verdict: VerdictResponse) {
++    this.cache.set(key, verdict)
++  }
++
++  consume(key: string): VerdictResponse | undefined {
++    const v = this.cache.get(key)
++    if (v) this.cache.delete(key)
++    return v
++  }
++}
++
++// ---------------------------------------------------------------------------
++// Plugin entry point
++// ---------------------------------------------------------------------------
++
++export async function AegisPlugin(_input: PluginInput, config: AegisConfig): Promise<Hooks> {
++  const guardUrl = config.guardUrl ?? "http://localhost:8000"
++  const agentId = config.agentId ?? "opencode-agent"
++
++  const guard = new GuardClient(guardUrl)
++  const audit = new AuditLog()
++  const taint = new TaintTracker(config.taintPatterns, config.taintTtlMs)
++  const verdictCache = new VerdictCache()
++
++  // Build mapping table with user overrides
++  const mappingTable: MappingTable = { ...DEFAULT_MAPPING }
++  if (config.mapping) {
++    for (const [toolName, actionType] of Object.entries(config.mapping)) {
++      mappingTable[toolName] = actionType
++    }
++  }
++
++  // Health check (non-blocking)
++  const alive = await guard.health()
++  if (!alive) {
++    log.warn("Guard not reachable — all tool calls will be denied (fail-closed)", { guardUrl })
++  }
++  log.info("AEGIS plugin initialized", { guardUrl, agentId, connected: alive })
++
++  return {
++    // ── permission.ask: primary enforcement ──────────────────────────
++    async "permission.ask"(input, output) {
++      const toolName = input.type ?? ""
++      const patterns = Array.isArray(input.pattern) ? input.pattern : input.pattern ? [input.pattern] : []
++      const args = buildPermissionArgs(toolName, patterns, input.metadata ?? {})
++
++      const actionType = resolveAction(mappingTable, toolName, args)
++      const proposition = buildProposition(toolName, args)
++
++      const verdict = await guard.check({ action_type: actionType, agent_id: agentId, proposition })
++
++      // Cache for before-execute reuse
++      if (input.callID) {
++        verdictCache.set(input.callID, verdict)
++      }
++
++      output.status = verdict.decision === "PERMITTED" ? "allow" : "deny"
++
++      audit.record(toolName, args, verdict.decision, verdict.explanation, "permission")
++    },
++
++    // ── tool.execute.before: defense-in-depth + taint ────────────────
++    async "tool.execute.before"(input, output) {
++      const argsStr = Object.values(output.args)
++        .map((v: unknown) => (typeof v === "string" ? v : JSON.stringify(v)))
++        .join(" ")
++
++      // 1. Taint check — always runs
++      const tainted = taint.check(argsStr)
++      if (tainted.length > 0) {
++        audit.record(input.tool, output.args, "FORBIDDEN", `Tainted data in arguments (${tainted.length} markers)`, "before", tainted)
++        throw new Error(`[AEGIS] Blocked: tool '${input.tool}' contains tainted data (${tainted.length} sensitive markers)`)
++      }
++
++      // 2. Check cached verdict from permission.ask
++      let verdict = verdictCache.consume(input.callID)
++
++      // 3. Fallback Guard call if no cached verdict
++      if (!verdict) {
++        const actionType = resolveAction(mappingTable, input.tool, output.args)
++        const proposition = buildProposition(input.tool, output.args)
++        verdict = await guard.check({ action_type: actionType, agent_id: agentId, proposition })
++        audit.record(input.tool, output.args, verdict.decision, verdict.explanation, "before")
++      }
++
++      // 4. Block if not permitted
++      if (verdict.decision !== "PERMITTED") {
++        throw new Error(`[AEGIS] Blocked: tool '${input.tool}' is ${verdict.decision}. ${verdict.explanation}`)
++      }
++    },
++
++    // ── tool.execute.after: taint extraction + audit ─────────────────
++    async "tool.execute.after"(input, output) {
++      let taintDetected: string[] | undefined
++
++      if (SCANNABLE_TOOLS.has(input.tool) && output.output) {
++        const source = `${input.tool}:${summarizeArgs(input.args)}`
++        const found = taint.scan(output.output, source)
++        if (found.length > 0) taintDetected = found
++      }
++
++      audit.record(
++        input.tool,
++        input.args,
++        null,
++        taintDetected ? `Taint detected: ${taintDetected.length} sensitive markers` : "ok",
++        "after",
++        taintDetected,
++      )
++    },
++
++    // ── aegis_check: transparency tool ───────────────────────────────
++    tool: {
++      aegis_check: tool({
++        description:
++          "Check whether an action is permitted by the AEGIS ethical guard. " +
++          "Use this to verify policy compliance before attempting an action. " +
++          "Returns a verdict (PERMITTED, FORBIDDEN, or UNDECIDABLE) with explanation.",
++        args: {
++          action_type: z
++            .string()
++            .describe("The type of action to check (e.g. 'modifyFile', 'deleteFile', 'executeCommand')"),
++          agent_id: z.string().optional().describe("The agent performing the action (defaults to configured agent)"),
++          proposition: z.string().describe("What specifically the action will do (e.g. file path, command, URL)"),
++        },
++        async execute(args) {
++          const verdict = await guard.check({
++            action_type: args.action_type,
++            agent_id: args.agent_id ?? agentId,
++            proposition: { description: args.proposition },
++          })
++          audit.record("aegis_check", args as unknown as Record<string, unknown>, verdict.decision, verdict.explanation, "tool")
++          return JSON.stringify({
++            verdict: verdict.decision,
++            explanation: verdict.explanation,
++            justification_chain: verdict.justification_chain,
++          })
++        },
++      }),
++    },
++  }
++}
++
++// ---------------------------------------------------------------------------
++// Helpers
++// ---------------------------------------------------------------------------
++
++function buildPermissionArgs(
++  type: string,
++  patterns: string[],
++  metadata: Record<string, unknown>,
++): Record<string, unknown> {
++  const args: Record<string, unknown> = { ...metadata }
++  if ((type === "bash" || type === "shell") && patterns.length > 0) {
++    args.command = patterns.join(" ")
++  } else if (patterns.length === 1) {
++    args.file_path = patterns[0]
++  } else if (patterns.length > 0) {
++    args.patterns = patterns
++  }
++  return args
++}
++
++function summarizeArgs(args: Record<string, unknown>): string {
++  const val = args.file_path ?? args.path ?? args.pattern ?? args.command
++  return typeof val === "string" ? val.slice(0, 80) : "unknown"
++}
+diff --git a/packages/opencode/src/plugin/index.ts b/packages/opencode/src/plugin/index.ts
+index 9e294f4f5..0c68cf455 100644
+--- a/packages/opencode/src/plugin/index.ts
++++ b/packages/opencode/src/plugin/index.ts
+@@ -12,6 +12,7 @@ import { Session } from "../session"
+ import { NamedError } from "@opencode-ai/util/error"
+ import { CopilotAuthPlugin } from "./copilot"
+ import { gitlabAuthPlugin as GitlabAuthPlugin } from "opencode-gitlab-auth"
++import { AegisPlugin } from "./aegis"
+ 
+ export namespace Plugin {
+   const log = Log.create({ service: "plugin" })
+@@ -51,6 +52,15 @@ export namespace Plugin {
+       if (init) hooks.push(init)
+     }
+ 
++    // AEGIS Guard — loaded when config.aegis is set
++    if (config.aegis) {
++      log.info("loading AEGIS guard plugin", { guardUrl: config.aegis.guardUrl })
++      const aegisHooks = await AegisPlugin(input, config.aegis).catch((err) => {
++        log.error("failed to load AEGIS plugin", { error: err })
++      })
++      if (aegisHooks) hooks.push(aegisHooks)
++    }
++
+     let plugins = config.plugin ?? []
+     if (plugins.length) await Config.waitForDependencies()
+ 

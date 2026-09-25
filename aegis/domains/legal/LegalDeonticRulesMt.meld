@@ -1,0 +1,48 @@
+(aegis-schema-version 1)
+(case LegalDeonticRulesMt)
+
+;; ── DataProtection Code (GDPR-pattern) ─────────
+
+;; Art. 5: Personal data to external services FORBIDDEN
+(forbiddenToDo-WRT DataProtection dataProcessorAgent (sendPersonalData personalData externalService))
+(forbiddenToDo-WRT DataProtection dataProcessorAgent (sendPersonalData financialData externalService))
+
+;; Art. 9: Medical data to third parties FORBIDDEN
+(forbiddenToDo-WRT DataProtection dataProcessorAgent (sendPersonalData medicalData thirdParty))
+(forbiddenToDo-WRT DataProtection dataProcessorAgent (sendPersonalData medicalData externalService))
+
+;; Public data sharing is PERMITTED
+(permittedToDo-WRT DataProtection dataProcessorAgent (sendPersonalData publicData externalService))
+(permittedToDo-WRT DataProtection dataProcessorAgent (sendPersonalData publicData thirdParty))
+
+;; Art. 17: Right to erasure — deletion is OBLIGATORY on request
+(oughtToDo-WRT DataProtection dataProcessorAgent (deleteData personalData))
+(oughtToDo-WRT DataProtection dataProcessorAgent (deleteData medicalData))
+
+;; Processing with consent is PERMITTED
+(permittedToDo-WRT DataProtection dataProcessorAgent (processData consent personalData))
+
+;; Processing with legitimate interest is PERMITTED (defeasible)
+(permittedToDo-WRT DataProtection dataProcessorAgent (processData legitimateInterest publicData))
+
+;; Contract approval: standard contracts PERMITTED
+(permittedToDo-WRT DataProtection legalReviewAgent (approveContract NDA))
+(permittedToDo-WRT DataProtection legalReviewAgent (approveContract serviceAgreement))
+
+;; Flagging clauses is always PERMITTED
+(permittedToDo-WRT DataProtection legalReviewAgent (flagClause serviceAgreement))
+(permittedToDo-WRT DataProtection legalReviewAgent (flagClause employmentContract))
+
+;; Sharing public records is PERMITTED
+(permittedToDo-WRT DataProtection legalReviewAgent (shareDocument public_record internalDepartment))
+
+;; Sharing privileged documents externally is FORBIDDEN
+(forbiddenToDo-WRT DataProtection legalReviewAgent (shareDocument attorney_client externalService))
+(forbiddenToDo-WRT DataProtection legalReviewAgent (shareDocument work_product thirdParty))
+
+;; ── Moral Axioms (non-defeasible) ──────────────
+
+;; Medical data to external services: absolute prohibition
+(forbiddenToDo dataProcessorAgent (sendPersonalData medicalData externalService))
+;; Attorney-client privilege can NEVER be shared with third parties
+(forbiddenToDo legalReviewAgent (shareDocument attorney_client thirdParty))

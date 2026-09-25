@@ -1,0 +1,44 @@
+(aegis-schema-version 1)
+(case SanctionsDeonticRulesMt)
+
+;; ── SanctionsCompliance Code ───────────────────
+
+;; Transactions with SDN-listed entities are FORBIDDEN
+(forbiddenToDo-WRT SanctionsCompliance tradeComplianceAgent (approveTransaction SDN_listed unrestricted))
+(forbiddenToDo-WRT SanctionsCompliance tradeComplianceAgent (approveTransaction SDN_listed restricted))
+
+;; Transactions with clear entities are PERMITTED
+(permittedToDo-WRT SanctionsCompliance tradeComplianceAgent (approveTransaction clear unrestricted))
+(permittedToDo-WRT SanctionsCompliance tradeComplianceAgent (approveTransaction clear allied))
+
+;; Payments to watchlisted entities are FORBIDDEN
+(forbiddenToDo-WRT SanctionsCompliance tradeComplianceAgent (processPayment SDN_listed))
+(forbiddenToDo-WRT SanctionsCompliance tradeComplianceAgent (processPayment watchlist))
+
+;; Dual-use goods to restricted destinations FORBIDDEN
+(forbiddenToDo-WRT SanctionsCompliance tradeComplianceAgent (releaseShipment dualUse restricted))
+(forbiddenToDo-WRT SanctionsCompliance tradeComplianceAgent (releaseShipment military restricted))
+(forbiddenToDo-WRT SanctionsCompliance tradeComplianceAgent (releaseShipment military sanctioned))
+
+;; Civilian goods to unrestricted destinations PERMITTED
+(permittedToDo-WRT SanctionsCompliance tradeComplianceAgent (releaseShipment civilian unrestricted))
+(permittedToDo-WRT SanctionsCompliance tradeComplianceAgent (releaseShipment civilian allied))
+
+;; Flagging entities is always PERMITTED
+(permittedToDo-WRT SanctionsCompliance tradeComplianceAgent (flagEntity SDN_listed))
+(permittedToDo-WRT SanctionsCompliance tradeComplianceAgent (flagEntity watchlist))
+
+;; ── SanctionsHumanitarianCode (higher prevalence) ──
+
+;; Humanitarian aid to sanctioned territories PERMITTED (exception)
+(permittedToDo-WRT SanctionsHumanitarianCode tradeComplianceAgent (supplyHumanitarianAid sanctioned))
+(permittedToDo-WRT SanctionsHumanitarianCode tradeComplianceAgent (supplyHumanitarianAid restricted))
+
+;; Humanitarian goods can be shipped anywhere
+(permittedToDo-WRT SanctionsHumanitarianCode tradeComplianceAgent (releaseShipment humanitarian restricted))
+(permittedToDo-WRT SanctionsHumanitarianCode tradeComplianceAgent (releaseShipment humanitarian sanctioned))
+
+;; ── Moral Axioms (non-defeasible) ──────────────
+
+;; Military goods to sanctioned territories: absolute prohibition
+(forbiddenToDo tradeComplianceAgent (releaseShipment military sanctioned))

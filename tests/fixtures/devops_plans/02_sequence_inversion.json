@@ -1,0 +1,7 @@
+{
+    "plan_id": "deploy-before-test",
+    "steps": [
+        {"action_type": "deployArtifact", "agent_id": "ciAgent"},
+        {"action_type": "testArtifact", "agent_id": "ciAgent"}
+    ]
+}

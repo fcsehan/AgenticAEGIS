@@ -1,0 +1,57 @@
+scenario: "Pharma domain compliance checks"
+domain: pharma
+setup:
+  meld_dir: aegis/domains/pharma
+  code_prevalence:
+    - PharmaEmergencyCode
+    - PharmaCompliance
+
+steps:
+  - name: "Report adverse event → PERMITTED"
+    action:
+      action_type: reportAdverseEvent
+      agent_id: prescribingAgent
+      proposition:
+        severity: majorInteraction
+    expected:
+      decision: PERMITTED
+
+  - name: "Prescribe with major interaction → FORBIDDEN"
+    action:
+      action_type: prescribeMedication
+      agent_id: prescribingAgent
+      proposition:
+        medicationClass: controlledSubstance
+        interactionSeverity: majorInteraction
+    expected:
+      decision: FORBIDDEN
+
+  - name: "Distribute experimental drug → FORBIDDEN"
+    action:
+      action_type: approveDistribution
+      agent_id: prescribingAgent
+      proposition:
+        approvalStatus: experimental
+        trialPhase: phase1
+    expected:
+      decision: FORBIDDEN
+
+  - name: "Distribute approved medication → PERMITTED"
+    action:
+      action_type: approveDistribution
+      agent_id: prescribingAgent
+      proposition:
+        approvalStatus: approved
+        trialPhase: postMarket
+    expected:
+      decision: PERMITTED
+
+  - name: "Withdrawn medication distribution → FORBIDDEN (moral axiom)"
+    action:
+      action_type: approveDistribution
+      agent_id: prescribingAgent
+      proposition:
+        approvalStatus: withdrawn
+        trialPhase: postMarket
+    expected:
+      decision: FORBIDDEN

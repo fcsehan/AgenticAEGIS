@@ -1,0 +1,23 @@
+{
+  "title": "Rules",
+  "addRule": "Add Rule",
+  "editRule": "Edit Rule",
+  "deleteRule": "Delete Rule",
+  "modality": "Modality",
+  "subject": "Subject",
+  "proposition": "Proposition",
+  "context": "Context",
+  "specificity": "Specificity",
+  "defeasible": "Defeasible",
+  "source": "Source",
+  "obligatory": "Obligatory",
+  "forbidden": "Forbidden",
+  "permitted": "Permitted",
+  "step": "Step {{current}} of {{total}}",
+  "selectModality": "Select a deontic modality",
+  "selectSubject": "Choose the agent role this rule applies to",
+  "defineProposition": "Define what the rule governs",
+  "setContext": "Set specificity and defeasibility",
+  "summary": "Rule Summary",
+  "noRules": "No rules defined yet. Add your first rule to get started."
+}

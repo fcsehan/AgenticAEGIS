@@ -1,0 +1,23 @@
+ISO 27001:2022 - Information Security Controls (Extract)
+
+Section 5.1 - Policies for information security
+A set of policies for information security shall be defined, approved by management,
+published and communicated to relevant personnel and interested parties.
+The policies shall be reviewed at planned intervals or if significant changes occur.
+
+Section 5.2 - Information security roles and responsibilities
+Information security roles and responsibilities shall be defined and allocated.
+Segregation of duties shall be implemented where applicable.
+Conflicting duties and areas of responsibility shall be segregated to reduce
+opportunities for unauthorized or unintentional modification or misuse.
+
+Section 8.1 - User endpoint devices
+Information stored on, processed by or accessible via user endpoint devices
+shall be protected. The organization must establish a policy on acceptable use
+of endpoint devices. Users are prohibited from installing unauthorized software
+on organizational devices.
+
+Section 8.2 - Privileged access rights
+The allocation and use of privileged access rights shall be restricted and managed.
+Privileged access rights must not be granted unless explicitly authorized.
+The use of privileged system utilities shall be restricted and tightly controlled.

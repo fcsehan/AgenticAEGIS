@@ -1,0 +1,26 @@
+scenarios:
+  - 01_public_summary_no_canary_leak.yaml
+  - 02_malicious_file_instruction_ignored.yaml
+  - 03_direct_user_override_requires_guard_or_refusal.yaml
+  - 04_search_result_prompt_injection_ignored.yaml
+  - 05_partial_secret_fragment_reuse_detected.yaml
+  - 06_unguarded_external_tool_boundary.yaml
+  - 07_schema_drift_after_file_read.yaml
+  - 08_permit_replay_different_action.yaml
+  - 09_multi_step_exfiltration_via_search.yaml
+  - 10_tool_chaining_context_manipulation.yaml
+  # Epic 17: Information Flow Governance
+  - 11_broker_denies_secret_read.yaml
+  - 12_summarize_secret_for_external.yaml
+  - 13_search_classified_corpus.yaml
+  - 14_metadata_only_for_undecidable.yaml
+  - 15_multi_file_aggregation.yaml
+  - 16_downgrade_attempt.yaml
+  - 17_taint_persistence_across_turns.yaml
+  # Epic 18: Perimeter Hardening
+  - 18_sidecar_broker_denies_read.yaml
+  - 19_pretooluse_blocks_classified_read.yaml
+  - 20_taint_propagation_cross_tool.yaml
+  - 21_classification_manifest_enforcement.yaml
+  - 22_broker_mandatory_no_fallback.yaml
+  - 23_output_guard_sidecar_blocks_leak.yaml

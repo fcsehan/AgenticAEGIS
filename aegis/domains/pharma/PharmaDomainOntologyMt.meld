@@ -1,0 +1,41 @@
+(aegis-schema-version 1)
+(case PharmaDomainOntologyMt)
+
+;; ── Agent Roles ────────────────────────────────
+(isa prescribingAgent PharmaRole)
+(isa assistantAgent PharmaRole)
+(isa pharmacistAgent PharmaRole)
+(genls PharmaRole IntelligentAgent)
+
+;; ── Agent hierarchy ────────────────────────────
+(genls prescribingAgent PharmaRole)
+(genls assistantAgent PharmaRole)
+(genls pharmacistAgent PharmaRole)
+
+;; ── Medication Classifications ─────────────────
+(isa controlledSubstance MedicationClass)
+(isa overTheCounter MedicationClass)
+(isa prescription MedicationClass)
+(isa experimental MedicationClass)
+
+;; ── Interaction Severity ───────────────────────
+(isa majorInteraction InteractionSeverity)
+(isa moderateInteraction InteractionSeverity)
+(isa minorInteraction InteractionSeverity)
+
+;; ── Approval Status ────────────────────────────
+(isa approved ApprovalStatus)
+(isa experimental ApprovalStatus)
+(isa withdrawn ApprovalStatus)
+
+;; ── Trial Phases ───────────────────────────────
+(isa phase1 TrialPhase)
+(isa phase2 TrialPhase)
+(isa phase3 TrialPhase)
+(isa postMarket TrialPhase)
+
+;; ── Deontic Infrastructure ─────────────────────
+(genlPreds oughtToDo-WRT permittedToDo-WRT)
+(negationPreds oughtToDo forbiddenToDo)
+(negationPreds permittedToDo forbiddenToDo)
+(negationPreds permittedToDo-WRT forbiddenToDo-WRT)

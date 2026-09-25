@@ -1,0 +1,13 @@
+(aegis-schema-version 1)
+(case OpenCodeEvidenceDeonticRulesMt)
+;; Explicit permissions and prohibition for an isolated demonstration workspace.
+(permittedToDo opencodeAgent (modifyFile allowed.txt))
+(permittedToDo opencodeAgent (modifyFile second.txt))
+(permittedToDo opencodeAgent (readFile allowed.txt))
+(forbiddenToDo opencodeAgent (modifyFile protected.txt))
+;; Both writes are individually permitted; the pair is forbidden as one plan.
+(forbidAggregate modifyFile 1)
+
+;; Unresolved contradictory norms exercise the distinct UNDECIDABLE verdict.
+(permittedToDo opencodeAgent (modifyFile uncertain.txt))
+(forbiddenToDo opencodeAgent (modifyFile uncertain.txt))

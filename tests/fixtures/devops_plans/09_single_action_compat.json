@@ -1,0 +1,10 @@
+{
+    "plan_id": "single-readfile",
+    "steps": [
+        {
+            "action_type": "readFile",
+            "agent_id": "opencodeAgent",
+            "proposition": {"path": "sourceFile"}
+        }
+    ]
+}

@@ -1,0 +1,56 @@
+{
+  "name": "@agentic-aegis/editor",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "lint": "eslint 'src/**/*.{ts,tsx}'",
+    "format": "prettier --check 'src/**/*.{ts,tsx,css,json}'",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "postbuild": "node ../../../scripts/build_frontend_notices.mjs"
+  },
+  "dependencies": {
+    "@phosphor-icons/react": "^2.1.0",
+    "@tanstack/react-query": "^5.60.0",
+    "@xyflow/react": "^12.3.0",
+    "clsx": "^2.1.1",
+    "dagre": "^0.8.5",
+    "i18next": "^23.16.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-i18next": "^14.1.0",
+    "react-router-dom": "^7.18.4",
+    "tailwind-merge": "^2.6.0",
+    "zustand": "^5.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@playwright/test": "^1.63.0",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/dagre": "^0.7.52",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "autoprefixer": "^10.4.0",
+    "eslint": "^9.0.0",
+    "jsdom": "^29.0.1",
+    "postcss": "^8.4.0",
+    "prettier": "^3.3.0",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5.6.0",
+    "typescript-eslint": "^8.70.1",
+    "vite": "^8.3.1",
+    "vitest": "^4.1.0"
+  },
+  "engines": {
+    "node": ">=22.12"
+  },
+  "license": "Apache-2.0"
+}

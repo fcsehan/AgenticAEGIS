@@ -1,0 +1,22 @@
+{
+    "plan_id": "happy-path-build-test-deploy",
+    "steps": [
+        {
+            "action_type": "buildArtifact",
+            "agent_id": "ciAgent",
+            "scheduled_duration_s": 120.0,
+            "post_state": {"buildStatus": "success"}
+        },
+        {
+            "action_type": "testArtifact",
+            "agent_id": "ciAgent",
+            "scheduled_duration_s": 300.0,
+            "post_state": {"testStatus": "passed"}
+        },
+        {
+            "action_type": "deployArtifact",
+            "agent_id": "ciAgent",
+            "scheduled_duration_s": 60.0
+        }
+    ]
+}

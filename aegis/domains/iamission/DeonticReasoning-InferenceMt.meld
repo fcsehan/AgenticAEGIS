@@ -1,0 +1,37 @@
+;; OpenCyc knowledge-base extract; copyright Cycorp, Inc.
+;; Source: QRG OpenCyc 1.02 flat files (2007-02-14).
+;; Packaging change: provenance header added for AgenticAEGIS.
+;; See THIRD_PARTY_NOTICES.md and licenses/OpenCyc-LEGAL.txt.
+
+ (case DeonticReasoning-InferenceMt)
+ (comment oughtTo-RoleInType
+ "An instance of #$TernaryPredicate, used for tersely expressing a certain class of deontic assertions.  #$oughtTo-RoleInType relates an instance of #$IntelligentAgent, a specialization of #$Event, and an instance of #$BinaryRolePredicate, so as to express the deontic requirement that the agent play that role in an event of that type.  For example, (#$oughtTo-RoleInType Person001 #$CharitableDonation #$giver) says that Person001 ought to make a donation to some charity.  (#$oughtTo-RoleInType AGENT EVENT-TYPE ROLE) expands into (#$oughtToDo AGENT (#$relationExistsInstance ROLE EVENT-TYPE AGENT)).")
+ (comment mtDeonIdeal
+ "(#$mtDeonIdeal MT-0 MT-1) means that from the point of view
+of MT-0, MT-1 is considered deontically ideal --- everything ought to
+be the case in MT-0 is in fact the case in MT-1, and everthing is in
+fact the case in MT-1 is permissible to be the case in MT-0.  That is
+to say, for each PROP, (#$oughtToBe PROP) holds in MT-0 only if PROP
+holds in MT-1, and PROP holds in MT-1 only if (#$permittedToBe PROP)
+holds in MT-0.")
+ (genlPreds mtDeonIdeal mtDeonAccessible)
+ (argIsa mtDeonIdeal 2 DeonticReasoningMicrotheory)
+ (arg2Isa mtDeonIdeal DeonticReasoningMicrotheory)
+ (argIsa mtDeonIdeal 1 DeonticReasoningMicrotheory)
+ (arg1Isa mtDeonIdeal DeonticReasoningMicrotheory)
+ (isa mtDeonIdeal ModalReasoningMicrotheoryPredicate)
+ (comment mtDeonAccessible
+ "(#$mtDeonAccessible MT-0 MT-1) means that the contents in
+MT-1 are considered deontically possible from the point of view of
+MT-0.  This relation is used to carry out inference using
+microtheories in an application involving deontic to-be operators.
+For each such application, #$mtDeonAccessible is a universal relation
+among relevant instances of #$DeonticReasoningMicrotheory.  Although
+such a universal relation determines a fixed set of microtheories, the
+reasoning we use such a relation is technical --- we want to take
+advantage of the supported microtheory predicate #$mtConverts-Ops.")
+ (argIsa mtDeonAccessible 2 DeonticReasoningMicrotheory)
+ (arg2Isa mtDeonAccessible DeonticReasoningMicrotheory)
+ (argIsa mtDeonAccessible 1 DeonticReasoningMicrotheory)
+ (arg1Isa mtDeonAccessible DeonticReasoningMicrotheory)
+ (isa mtDeonAccessible ModalReasoningMicrotheoryPredicate)

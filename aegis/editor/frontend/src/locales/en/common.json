@@ -1,0 +1,17 @@
+{
+  "appName": "AEGIS Domain Editor",
+  "save": "Save",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "edit": "Edit",
+  "create": "Create",
+  "close": "Close",
+  "back": "Back",
+  "next": "Next",
+  "search": "Search…",
+  "loading": "Loading…",
+  "noResults": "No results found",
+  "confirm": "Confirm",
+  "language": "Language",
+  "english": "English"
+}

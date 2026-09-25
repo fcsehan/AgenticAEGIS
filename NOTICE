@@ -1,0 +1,19 @@
+AgenticAEGIS
+Copyright 2026 Frank Csehan
+
+Project contributions are licensed under the Apache License, Version 2.0.
+
+This distribution includes Python adaptations of Building Problem Solvers
+code by Kenneth D. Forbus and Johan de Kleer. Original copyright and permission
+terms are retained in licenses/BPS.txt and in the affected source files.
+
+The IAMission domain includes OpenCyc knowledge-base extracts originating
+with Cycorp, Inc., distributed through Northwestern University's Qualitative
+Reasoning Group. See THIRD_PARTY_NOTICES.md and licenses/OpenCyc-LEGAL.txt.
+No Cyc or OpenCyc Knowledge Server binary is included.
+
+The DDIC implementation is based on research by Taylor Olson, Roberto
+Salas-Damian and Kenneth D. Forbus. Attribution does not imply endorsement.
+
+Built web assets include third-party JavaScript dependencies. Their notices
+are emitted as THIRD_PARTY_NOTICES.txt alongside the built application.

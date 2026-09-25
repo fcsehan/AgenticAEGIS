@@ -1,0 +1,19 @@
+{
+  "repository": "https://github.com/anomalyco/opencode",
+  "commit": "832b8e252e8e7d0a2d321e0291f468716a26577c",
+  "package_version": "1.2.27",
+  "integration_commit": "afd305f6abee5639632fdda6c5f43139635b27b2",
+  "includes_uncommitted_adapter_changes": true,
+  "patch": "patches/legacy-aegis.patch",
+  "patch_sha256": "0d885bddae612d68c829a8a8dcc2c49bdccc23900ccf6347b8031394e9bd5596",
+  "status": "Historical source snapshot; not a validation of the current release.",
+  "source": {
+    "url": "https://codeload.github.com/anomalyco/opencode/tar.gz/832b8e252e8e7d0a2d321e0291f468716a26577c",
+    "sha256": "257c2c10373a2ff5e60fc4ca5c5fa679baac28c41add2973d1bee21c4bda0698"
+  },
+  "result_sha256": {
+    "packages/opencode/src/config/config.ts": "743cca7cf8c1755d3a207013bb3bba10b5d0daf4d3802563e707ada58414529d",
+    "packages/opencode/src/plugin/index.ts": "b28822b9ccfc567ba6757a7d9a4310d070995fe12df1fea08d042f9a4923213a",
+    "packages/opencode/src/plugin/aegis.ts": "71a3066bece52d8ea4f8e900c17b9ab5fd78424545d72c8cb4bfb8426d555315"
+  }
+}

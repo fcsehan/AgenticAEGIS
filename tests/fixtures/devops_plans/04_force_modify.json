@@ -1,0 +1,6 @@
+{
+    "plan_id": "force-push",
+    "steps": [
+        {"action_type": "forceModifyRepository", "agent_id": "ciAgent"}
+    ]
+}

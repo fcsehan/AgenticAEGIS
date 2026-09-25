@@ -1,0 +1,12 @@
+{
+    "plan_id": "smuggling-clean-then-danger",
+    "steps": [
+        {"action_type": "readFile", "agent_id": "opencodeAgent",
+         "proposition": {"path": "sourceFile"}},
+        {"action_type": "readFile", "agent_id": "opencodeAgent",
+         "proposition": {"path": "configFile"}},
+        {"action_type": "readFile", "agent_id": "opencodeAgent",
+         "proposition": {"path": "documentFile"}},
+        {"action_type": "executeRemoteCode", "agent_id": "ciAgent"}
+    ]
+}
