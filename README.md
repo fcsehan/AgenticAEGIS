@@ -1,5 +1,7 @@
 # AgenticAEGIS
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23084277.svg)](https://doi.org/10.5281/zenodo.23084277)
+
 **A deterministic policy guard for structured actions and plans, with a local web editor for MELD rule authoring.**
 
 AEGIS stands for *Architectural Ethics Guard for Intelligent Systems*. An agent,
