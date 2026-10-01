@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata below."
+title: "AgenticAEGIS: Fail-Closed Runtime Guard for LLM Agent Actions and Plans"
+type: software
+version: 0.1.0
+authors:
+  - family-names: Csehan
+    given-names: Frank
+    orcid: "https://orcid.org/0009-0003-4352-4672"
+    website: "https://ajagara.com"
+license: Apache-2.0
+repository-code: "https://github.com/fcsehan/AgenticAEGIS"
+abstract: >-
+  AgenticAEGIS (Architectural Ethics Guard for Intelligent Systems) is a
+  caller-agnostic policy decision point that checks actions and complete
+  action plans of LLM agents against a deontic rule base before execution.
+  Conflicting action norms are resolved with Olson's Defeasible Deontic
+  Inheritance Calculus (DDIC); plan-level constraints cover sequences,
+  aggregates, deadlines, and preconditions. Verdicts are PERMITTED,
+  FORBIDDEN, or UNDECIDABLE, and anything outside the modeled space fails
+  closed.
+keywords:
+  - LLM agents
+  - deontic logic
+  - defeasible reasoning
+  - runtime monitoring
+  - policy enforcement
+  - plan governance
+  - fail-closed
+  - MELD

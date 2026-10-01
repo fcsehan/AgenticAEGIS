@@ -1,0 +1,24 @@
+{
+  "title": "AgenticAEGIS: Fail-Closed Runtime Guard for LLM Agent Actions and Plans",
+  "upload_type": "software",
+  "description": "<p>AgenticAEGIS (Architectural Ethics Guard for Intelligent Systems) is a caller-agnostic policy decision point that checks actions and complete action plans of LLM agents against a deontic rule base before execution. Conflicting action norms are resolved with Olson's Defeasible Deontic Inheritance Calculus (DDIC); plan-level constraints cover sequences, aggregates, deadlines, and preconditions. Verdicts are PERMITTED, FORBIDDEN, or UNDECIDABLE, and anything outside the modeled space fails closed.</p><p>This archived release is the evaluated artifact for the preprint <em>Fail-Closed Plan Governance for LLM Agents: A Reproducible DDIC-Backed Runtime Guard for Normative Action Sequences</em>. It contains the runtime monitor, MELD domains, automated tests, adversarial plan scenarios, benchmarks, and TLA+ specifications.</p>",
+  "creators": [
+    {
+      "name": "Csehan, Frank",
+      "orcid": "0009-0003-4352-4672"
+    }
+  ],
+  "license": "Apache-2.0",
+  "access_right": "open",
+  "language": "eng",
+  "keywords": [
+    "LLM agents",
+    "deontic logic",
+    "defeasible reasoning",
+    "runtime monitoring",
+    "policy enforcement",
+    "plan governance",
+    "fail-closed",
+    "MELD"
+  ]
+}
