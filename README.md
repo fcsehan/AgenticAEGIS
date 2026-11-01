@@ -2,40 +2,48 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23084277.svg)](https://doi.org/10.5281/zenodo.23084277)
 
-The DOI identifies archived software releases. The accompanying research
-manuscript is being prepared for submission and has not yet been published.
-The `main` branch includes updates beyond the
-[archived v0.1.0 snapshot](https://doi.org/10.5281/zenodo.23084278);
-these commits do not change that archive or the software version.
+AgenticAEGIS checks structured actions and plans against policy rules before a
+host executes them. The guard returns a deterministic decision, `PERMITTED`,
+`FORBIDDEN` or `UNDECIDABLE`, with a justification. An agent, workflow or service
+can call the guard. Its host must submit every relevant action for evaluation
+and allow execution only when the decision is `PERMITTED`.
 
-**A deterministic policy guard for structured actions and plans, with a local web editor for MELD rule authoring.**
+AEGIS stands for *Architectural Ethics Guard for Intelligent Systems*. The
+project is a research prototype, and its checks do not certify the safety of an
+agent or application. The Python package is imported as `aegis` and distributed
+as `agentic-aegis`.
 
-AEGIS stands for *Architectural Ethics Guard for Intelligent Systems*. An agent,
-workflow or service proposes an action; the guard evaluates it against a compiled
-rule base and returns `PERMITTED`, `FORBIDDEN` or `UNDECIDABLE`, with a justification.
-Only `PERMITTED` should authorize execution. The host must enforce that contract.
+## Rules, plans and tools
 
-The Python import remains `aegis`; the distribution is named `agentic-aegis`.
-This is a research prototype, not a certification of an agent or application.
+Rules are written in MELD (Modal Ethics Logic Definitions), a declarative
+language. The Python reasoner uses DDIC (Defeasible Deontic Inheritance Calculus)
+to resolve conflicts between action norms, which express permissions,
+prohibitions and obligations.
 
-## Included
+AEGIS evaluates plans supplied by the caller, which is responsible for
+generating them. Plan checks cover step order, aggregate limits, declared
+timing and state preconditions. They combine with DDIC decisions for individual
+actions, while the plan constraints themselves are evaluated separately from
+DDIC inference.
 
-- Python DDIC reasoning, MELD loading, action and plan checking.
+The repository includes:
+
+- A Python library for loading MELD rules and checking actions and plans.
 - Six example domains: DevOps, IAMission, pharma, sanctions, legal and information flow.
-- A React/TypeScript web editor with persistent projects, rule and plan editors,
-  scenario tests, revision-bound review, release, activation and rollback.
-- Optional local model integration and document-assisted rule proposals. Proposed
-  rules require validation and review; the model is not the normative authority.
-- Guard REST API, audit, information-flow components and red-team tooling.
+- A local React/TypeScript web editor that saves projects, edits rules and plans,
+  and runs scenario tests. Review and release refer to a specific source revision.
+  The editor also supports activation and rollback.
+- A REST API, audit records, information-flow controls and tools for adversarial testing.
 - Automated tests and TLA+ specifications.
 
-AEGIS evaluates plans; it does not generate them. Plan constraints cover order,
-aggregate limits, declared timing and state preconditions. They compose with
-DDIC-resolved action verdicts; they are not themselves DDIC inference rules.
+The editor can use a local language model or documents to propose rules.
+These proposals require validation and review. MELD remains the source of
+the rules that the guard evaluates.
 
 ## Run the web editor
 
-Requirements: Python 3.12+, Node.js 22.12+ and npm. From this repository:
+Install Python 3.12+, Node.js 22.12+ and npm, then run these commands from the
+repository root:
 
 ```sh
 python3.12 -m venv .venv
@@ -48,15 +56,15 @@ cp -R aegis/domains/devops workspace/devops
   --config-dir "$PWD/.editor-config" --port 8010
 ```
 
-Open **http://127.0.0.1:8010** and open the workspace project. The editor is
-restricted to local, single-user operation. It does not provide a multi-user
-authentication service and must not be exposed through a reverse proxy.
-Manual authoring and guard checks do not require a model or API key.
+Open http://127.0.0.1:8010 and select the workspace project. Run the editor
+locally for one user. It has no multi-user authentication and must not be
+exposed through a reverse proxy. You can author rules manually and run guard
+checks without a model or API key.
 
 See the [web editor guide](docs/guides/editor-web-app.md) for provider setup,
 review, activation, backup and recovery. The supplied editor policy permits
-loopback inference only; choosing a remote provider does not grant permission
-to transmit domain content to it.
+model inference only through the loopback interface. Selecting a remote provider
+does not authorize sending domain content to it.
 
 ## Use the Python library
 
@@ -82,18 +90,22 @@ if verdict.decision == Decision.PERMITTED:
     pass
 ```
 
-The example paths are relative to a source checkout. Installed applications can
+Run this example from the repository root. Installed applications can
 locate bundled domains via `importlib.resources.files("aegis") / "domains"`.
 See [Python and REST usage](docs/usage.md) for plan checking and service startup.
 
 ## OpenCode integration
 
-[Install and test the OpenCode integration](integrations/opencode/README.md)
-against a pinned upstream release. The reproducible process tests run the real
-OpenCode host and AEGIS sidecar, checking file effects for permitted, forbidden,
-undecidable and failed guard requests, plus declared-plan enforcement.
-The integration includes a verified download, plugin, MELD fixtures, CI workflow
-and [recorded evidence](integrations/opencode/evidence/README.md).
+Follow the [OpenCode integration guide](integrations/opencode/README.md) to
+install and test a pinned upstream release. The process tests run OpenCode
+with the AEGIS guard as a separate service. They inspect file changes for
+permitted, forbidden, undecidable and failed guard requests, and check that
+execution follows the approved plan supplied by the caller.
+
+The integration includes a plugin, MELD test fixtures and a CI workflow.
+Setup verifies the downloaded OpenCode release. The
+[validation record](integrations/opencode/evidence/README.md) documents the
+tested version and results.
 
 ## Development
 
@@ -104,11 +116,17 @@ npm --prefix aegis/editor/frontend run lint
 npm --prefix aegis/editor/frontend test
 ```
 
-The default Python run excludes tests that require a live LLM; use
-`AEGIS_LIVE_LLM=1` to opt in. Browser tests use a deterministic local fixture
-server. See [contributing](CONTRIBUTING.md) for browser tests and wheel builds.
+The default Python test run excludes tests that require a running large
+language model (LLM). Set `AEGIS_LIVE_LLM=1` to include them. Browser tests use a
+local server with deterministic test fixtures. See the
+[contributor guide](CONTRIBUTING.md) for browser tests and wheel builds.
 
 ## Scope and documentation
+
+The guard evaluates the modeled action or plan it receives. It does not verify
+that natural-language rules were translated correctly or that facts declared by
+the caller are true. Execution paths that bypass the guard fall outside its
+guarantee.
 
 - [Architecture](docs/architecture.md)
 - [MELD language reference](docs/_archive/MELD_SPEC.md)
@@ -117,12 +135,20 @@ server. See [contributing](CONTRIBUTING.md) for browser tests and wheel builds.
 - [Release contents and preparation](docs/release.md)
 - [Research foundations and third-party notices](THIRD_PARTY_NOTICES.md)
 
-The guarantee starts with the modeled action or plan submitted to the guard.
-It does not establish that natural-language rules were translated correctly,
-that caller-declared facts are true, or that an unmediated host path is safe.
+## Citation and publication status
+
+The DOI badge links to archived software releases. Use
+[10.5281/zenodo.23084278](https://doi.org/10.5281/zenodo.23084278) to cite the
+archived v0.1.0 snapshot. [CITATION.cff](CITATION.cff) contains the citation
+metadata.
+
+The `main` branch includes updates beyond that snapshot. These commits retain
+software version 0.1.0 and leave the Zenodo archive unchanged. The accompanying
+research manuscript is being prepared for submission and has not yet been
+published.
 
 ## License
 
 AgenticAEGIS project contributions are licensed under the
-[Apache License 2.0](LICENSE). Retained third-party notices and terms are listed
-in [NOTICE](NOTICE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+[Apache License 2.0](LICENSE). See [NOTICE](NOTICE) and
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for third-party notices and terms.
