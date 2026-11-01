@@ -2,6 +2,12 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23084277.svg)](https://doi.org/10.5281/zenodo.23084277)
 
+The DOI identifies archived software releases. The accompanying research
+manuscript is being prepared for submission and has not yet been published.
+The `main` branch includes updates beyond the
+[archived v0.1.0 snapshot](https://doi.org/10.5281/zenodo.23084278);
+these commits do not change that archive or the software version.
+
 **A deterministic policy guard for structured actions and plans, with a local web editor for MELD rule authoring.**
 
 AEGIS stands for *Architectural Ethics Guard for Intelligent Systems*. An agent,
